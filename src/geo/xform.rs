@@ -47,6 +47,10 @@ impl Xform {
         Self::xlate(-p) * Self::rot(a) * Self::xlate(p)
     }
 
+    pub fn scale_on(p: V, s: V) -> Self {
+        Self::xlate(-p) * Self::scale(s) * Self::xlate(p)
+    }
+
     pub fn rect_to_rect(src: &Rect, dst: &Rect) -> Self {
         let sf = f64::min(dst.width() / src.width(), dst.height() / src.height());
 
