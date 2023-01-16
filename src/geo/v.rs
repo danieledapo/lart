@@ -4,10 +4,6 @@ use rand::{distributions::uniform::SampleRange, Rng};
 
 use crate::{Bbox, Rect, V};
 
-pub fn v(x: impl Into<f64>, y: impl Into<f64>) -> V {
-    V::new(x.into(), y.into())
-}
-
 impl V {
     pub const fn new(x: f64, y: f64) -> Self {
         Self { x, y }
