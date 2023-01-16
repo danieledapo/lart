@@ -188,7 +188,7 @@ impl Sketch {
             Ok(format!("{}-{}.svg", self.name, last + 1))
         };
 
-        let outpath = outdir.join(&get_next_free_name()?);
+        let outpath = outdir.join(get_next_free_name()?);
         {
             let out = fs::File::create(&outpath)?;
             let mut out = BufWriter::new(out);
