@@ -38,21 +38,20 @@ pub fn main() {
         let rr = map(i.saturating_sub(1), 0, parms.strata, parms.minh, parms.maxh);
 
         let texline = arc(a, r);
-        let poly;
-        if i == 0 {
+        let poly = if i == 0 {
             let mut p = Path::new();
             p.push(v(0, 0));
             p.extend(texline.iter());
 
-            poly = Polygon::from(p);
+            Polygon::from(p)
         } else {
             let aa = f64::max(0.0, a + doc.gen_range(0.0..=da));
 
             let mut p = arc(aa, rr);
             p.reverse();
             p.extend(texline.iter());
-            poly = Polygon::from(p);
-        }
+            Polygon::from(p)
+        };
 
         let mut texture = Geometry::new();
         for yd in frange(0.0, poly.bbox().unwrap().height(), 1.0) {

@@ -37,7 +37,7 @@ pub fn main() {
         let g = blueprints[0].clone();
         blueprints.rotate_left(1);
 
-        a = a | g.clone() * Xform::xlate(r.min());
+        a = a | (g.clone() * Xform::xlate(r.min()));
     }
 
     let mut t = Geometry::new();
