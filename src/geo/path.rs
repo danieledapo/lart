@@ -97,10 +97,10 @@ impl IndexMut<usize> for Path {
     }
 }
 
-impl<I: IntoIterator<Item = V>> From<I> for Path {
+impl<W: Into<V>, I: IntoIterator<Item = W>> From<I> for Path {
     fn from(it: I) -> Self {
         Self {
-            points: it.into_iter().map(V::from).collect(),
+            points: it.into_iter().map(Into::into).collect(),
         }
     }
 }

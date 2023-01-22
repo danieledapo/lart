@@ -137,3 +137,9 @@ impl Neg for V {
         V::new(-self.x, -self.y)
     }
 }
+
+impl<W: Into<f64>> From<(W, W)> for V {
+    fn from((x, y): (W, W)) -> Self {
+        V::new(x.into(), y.into())
+    }
+}
