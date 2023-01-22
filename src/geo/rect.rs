@@ -1,4 +1,4 @@
-use crate::{v, V};
+use crate::{v, Path, V};
 
 pub trait Bbox {
     fn bbox(&self) -> Option<Rect>;
@@ -110,6 +110,16 @@ impl Rect {
         (0..ydivs)
             .flat_map(move |r| (0..xdivs).map(move |c| (r, c)))
             .map(move |(r, c)| Rect::with_dimensions(self.min + d * v(c, r), d.x, d.y))
+    }
+
+    pub fn closed_path(&self) -> Path {
+        Path::from([
+            self.min(),
+            v(self.right(), self.top()),
+            self.max(),
+            v(self.left(), self.bottom()),
+            self.min(),
+        ])
     }
 }
 
