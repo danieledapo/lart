@@ -1,56 +1,49 @@
-use voronator::{delaunator, VoronoiDiagram};
-
-use crate::{Geometry, Path, Polygon, V};
+use crate::{Geometry, Polygon, Rect, V};
 
 pub fn triangulate(pts: impl AsRef<[V]>) -> Geometry {
-    let pts = pts.as_ref();
-
-    let tri = delaunator::triangulate(pts).map_or_else(Vec::new, |t| t.triangles);
+    let pts = pts
+        .as_ref()
+        .iter()
+        .map(|vv| delaunator::Point { x: vv.x, y: vv.y })
+        .collect::<Vec<_>>();
+    let tri = delaunator::triangulate(&pts);
 
     let polys = tri
+        .triangles
         .chunks_exact(3)
         .map(|vs| {
-            let a = pts[vs[0]];
-            let b = pts[vs[1]];
-            let c = pts[vs[2]];
-
-            Polygon::from(vec![a, b, c])
+            Polygon::from([
+                (pts[vs[0]].x, pts[vs[0]].y),
+                (pts[vs[1]].x, pts[vs[1]].y),
+                (pts[vs[2]].x, pts[vs[2]].y),
+            ])
         })
         .collect();
 
     Geometry::from_polygons(polys)
 }
 
-// NOTE: clip must be in clockwise order in order for the clipping to work
-pub fn voronoi(pts: impl AsRef<[V]>, clip: &Path) -> Geometry {
-    let pts = pts.as_ref();
+pub fn voronoi(pts: impl AsRef<[V]>, clip: &Rect) -> Geometry {
+    let pts = pts
+        .as_ref()
+        .iter()
+        .map(|vv| voronoice::Point { x: vv.x, y: vv.y })
+        .collect::<Vec<_>>();
 
-    let polys = VoronoiDiagram::with_bounding_polygon(
-        pts.to_vec(),
-        &voronator::polygon::Polygon::from_points(clip.points.clone()),
-    )
-    .map_or_else(Vec::new, |res| {
-        res.cells()
-            .iter()
-            .map(|p| Polygon::from(p.points().to_vec()))
-            .collect()
-    });
-
-    Geometry::from_polygons(polys)
+    let c = clip.center();
+    voronoice::VoronoiBuilder::default()
+        .set_sites(pts)
+        .set_bounding_box(voronoice::BoundingBox::new(
+            voronoice::Point { x: c.x, y: c.y },
+            clip.width(),
+            clip.height(),
+        ))
+        .build()
+        .map_or_else(Geometry::new, |vor| {
+            Geometry::from_polygons(
+                vor.iter_cells()
+                    .map(|p| Polygon::from(p.iter_vertices().map(|p| V::new(p.x, p.y))))
+                    .collect::<Vec<_>>(),
+            )
+        })
 }
-
-impl delaunator::Coord for V {
-    fn from_xy(x: f64, y: f64) -> Self {
-        V::new(x, y)
-    }
-
-    fn x(&self) -> f64 {
-        self.x
-    }
-
-    fn y(&self) -> f64 {
-        self.y
-    }
-}
-
-impl delaunator::Vector<V> for V {}

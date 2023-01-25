@@ -27,7 +27,7 @@ pub fn main() {
         }
     }
 
-    for g in voronoi(&pts, &Path::from(bbox)).polygons {
+    for g in voronoi(&pts, &bbox).polygons {
         let bbox = match g.bbox() {
             None => continue,
             Some(bbox) => bbox,
