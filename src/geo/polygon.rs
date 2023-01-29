@@ -1,8 +1,12 @@
-use crate::{bbox_union, Bbox, Path, Polygon, Rect};
+use crate::{bbox_union, polar_angles, Bbox, Path, Polygon, Rect, V};
 
 impl Polygon {
     pub const fn new() -> Self {
         Self { areas: vec![] }
+    }
+
+    pub fn circle(c: V, r: f64, points: u16) -> Self {
+        Self::from(polar_angles(points).map(|a| c + V::polar(a, r)))
     }
 
     pub fn is_empty(&self) -> bool {
