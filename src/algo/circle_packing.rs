@@ -8,6 +8,7 @@ pub struct CirclePacker {
     pub margin: f64,
     pub min_radius: f64,
     pub max_radius: f64,
+    pub allow_nested: bool,
 }
 
 impl CirclePacker {
@@ -19,6 +20,7 @@ impl CirclePacker {
             margin: 0.0,
             min_radius: 0.0,
             max_radius,
+            allow_nested: false,
         }
     }
 
@@ -40,7 +42,11 @@ impl CirclePacker {
         }
 
         for &(cc, rr) in &self.circles {
-            let d = cc.dist(c) - rr - self.margin;
+            let mut d = cc.dist(c) - rr;
+            if self.allow_nested {
+                d = d.abs();
+            }
+            d -= self.margin;
             if d < r {
                 r = d;
                 if r < self.min_radius {
