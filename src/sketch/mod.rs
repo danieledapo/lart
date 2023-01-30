@@ -198,9 +198,7 @@ impl Sketch {
             writeln!(
                 out,
                 r#"<?xml version="1.0" encoding="utf-8" ?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {w} {h}" width="{w}mm" height="{h}mm">"#,
-                w = width,
-                h = height
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {width} {height}" width="{width}mm" height="{height}mm">"#
             )?;
 
             // TODO: save parameters in the svg here?
