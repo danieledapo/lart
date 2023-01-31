@@ -1,6 +1,6 @@
 use std::ops::{Index, IndexMut, RangeBounds};
 
-use crate::{bbox_union, Bbox, Path, Rect, V};
+use crate::{bbox_union, path, Bbox, Path, Rect, V};
 
 impl Path {
     pub const fn new() -> Self {
@@ -107,12 +107,12 @@ impl<W: Into<V>, I: IntoIterator<Item = W>> From<I> for Path {
 
 impl From<Rect> for Path {
     fn from(r: Rect) -> Self {
-        Self::from([
+        path!(
             r.min(),
             V::new(r.right(), r.top()),
             r.max(),
             V::new(r.left(), r.bottom()),
-        ])
+        )
     }
 }
 

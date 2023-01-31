@@ -1,4 +1,4 @@
-use crate::{v, Path, V};
+use crate::{path, v, Path, V};
 
 pub trait Bbox {
     fn bbox(&self) -> Option<Rect>;
@@ -113,13 +113,13 @@ impl Rect {
     }
 
     pub fn closed_path(&self) -> Path {
-        Path::from([
+        path!(
             self.min(),
             v(self.right(), self.top()),
             self.max(),
             v(self.left(), self.bottom()),
             self.min(),
-        ])
+        )
     }
 }
 

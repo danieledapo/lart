@@ -19,22 +19,22 @@ pub fn v(x: impl Into<f64>, y: impl Into<f64>) -> V {
 
 #[macro_export]
 macro_rules! polygon {
-    ($($d: tt)*) => { _build_path_like!(Polygon, $($d)*) };
+    ($($d: tt)*) => { $crate::_build_path_like!($crate::geo::Polygon, $($d)*) };
 }
 
 #[macro_export]
 macro_rules! path {
-    ($($d: tt)*) => { _build_path_like!(Path, $($d)*) };
+    ($($d: tt)*) => { $crate::_build_path_like!($crate::geo::Path, $($d)*) };
 }
 
 #[macro_export]
 macro_rules! rect {
     ($v0: expr, $($vv: expr ,)*) => {{
-        rect!($v0 $(, $vv)*)
+        $crate::rect!($v0 $(, $vv)*)
     }};
 
     ($v0: expr $(, $vv:expr)*) => {{
-        let mut b = geo::Rect::new($v0);
+        let mut b = $crate::geo::Rect::new($v0);
         $( b.expand($vv); )*
         b
     }};
