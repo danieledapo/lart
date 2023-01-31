@@ -49,4 +49,12 @@ macro_rules! _build_path_like {
     ($t: ty, $($vv:expr,)*) => {
         <$t as From<_>>::from([$($vv,)*])
     };
+
+    ($t: ty, $size:expr; $init:expr) => {{
+        let mut g = <$t>::new();
+        for _ in 0..$size {
+            g.push($init);
+        }
+        g
+    }};
 }
