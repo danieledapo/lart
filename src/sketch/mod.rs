@@ -1,6 +1,8 @@
+pub mod hatching;
 pub mod parms;
 pub mod vpype;
 
+pub use hatching::*;
 pub use parms::*;
 pub use vpype::*;
 

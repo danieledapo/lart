@@ -28,26 +28,10 @@ pub fn main() {
     }
 
     for g in voronoi(&pts, &bbox).polygons {
-        let bbox = match g.bbox() {
-            None => continue,
-            Some(bbox) => bbox,
-        };
-
-        let mut tex = Geometry::new();
-
         let a = doc.gen_range(0.0..=TAU);
         let step = doc.gen_range(2..=10) as f64 / 2.0;
 
-        let d = V::polar(a, 1.0);
-        let pd = V::polar(a + PI / 2.0, 1.0);
-        let r = 0.5 * f64::hypot(bbox.width(), bbox.height());
-
-        let p0 = bbox.center() + d * r;
-        let p1 = bbox.center() - d * r;
-        for dd in frange(-r, r + step, step) {
-            let o = pd * dd;
-            tex.push_path(path!(p0 + o, p1 + o));
-        }
+        let tex = parallel_hatch(&g, a, step);
 
         doc.geometry(tex & &g);
         doc.geometry(g);
