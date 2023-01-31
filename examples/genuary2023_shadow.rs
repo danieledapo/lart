@@ -2,6 +2,8 @@ use lart::*;
 
 sketch_parms! {
     sides: u16 = 4,
+    vor: bool = false,
+    vor_points: u16 = 200,
 }
 
 fn main() {
@@ -25,19 +27,63 @@ fn main() {
 
     let clip_above = Geometry::from(polygon!(bbox.min(), p0, p1, v(bbox.right(), bbox.top())));
     let clip_below = Geometry::from(polygon!(p0, p1, bbox.max(), v(bbox.left(), bbox.bottom())));
-    let _ = polygon!((0, 0),);
 
-    let above = &poly & clip_above.clone();
-    let below = &poly & clip_below;
+    let above = &poly & &clip_above;
+    let below = &poly & &clip_below;
 
     let mut tex_above = Geometry::new();
     let mut tex_below = Geometry::new();
 
-    for x in frange(-bbox.width() * 2.0, bbox.width() * 2.0, 1.5) {
-        tex_above.push_path(path!(v(x, bbox.top()), v(x + bbox.width(), bbox.bottom()),));
-    }
-    for x in frange(-bbox.width() * 2.0, bbox.width() * 2.0, 1.0) {
-        tex_below.push_path(path!(v(x, bbox.top()), v(x - bbox.width(), bbox.bottom()),));
+    if !parms.vor {
+        for x in frange(-bbox.width() * 2.0, bbox.width() * 2.0, 1.5) {
+            tex_above.push_path(path!(v(x, bbox.top()), v(x + bbox.width(), bbox.bottom())));
+        }
+        for x in frange(-bbox.width() * 2.0, bbox.width() * 2.0, 1.0) {
+            tex_below.push_path(path!(v(x, bbox.top()), v(x - bbox.width(), bbox.bottom())));
+        }
+    } else {
+        for x in frange(-bbox.width() * 2.0, bbox.width() * 2.0, 1.5) {
+            tex_above.push_path(path!(v(x, bbox.top()), v(x + bbox.width(), bbox.bottom())));
+        }
+        doc.geometry(tex_above & &above);
+        tex_above = Geometry::new();
+
+        for x in frange(-bbox.width() * 2.0, bbox.width() * 4.0, 3.0) {
+            tex_below.push_path(path!(v(x, bbox.top()), v(x - bbox.width(), bbox.bottom())));
+        }
+        doc.geometry(tex_below & (clip_below - below.clone()));
+        tex_below = Geometry::new();
+
+        let mut pts = vec![];
+        for _ in 0..parms.vor_points {
+            pts.push(V::in_rect(&mut doc, &bbox));
+        }
+
+        for g in voronoi(&pts, &bbox).polygons {
+            let bbox = match g.bbox() {
+                None => continue,
+                Some(bbox) => bbox,
+            };
+
+            let a = doc.gen_range(0.0..=TAU);
+            let step = doc.gen_range(2..=10) as f64 / 2.0;
+
+            let d = V::polar(a, 1.0);
+            let pd = V::polar(a + PI / 2.0, 1.0);
+            let r = 0.5 * f64::hypot(bbox.width(), bbox.height());
+
+            let mut tex = Geometry::new();
+            let p0 = bbox.center() + d * r;
+            let p1 = bbox.center() - d * r;
+            for dd in frange(-r, r + step, step) {
+                let o = pd * dd;
+                tex.push_path(path!(p0 + o, p1 + o));
+            }
+
+            tex = tex & &g;
+            tex_above.extend(&tex);
+            tex_below.extend(&tex);
+        }
     }
 
     doc.geometry(&tex_above & (clip_above - above.clone()));
