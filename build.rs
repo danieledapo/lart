@@ -8,7 +8,6 @@ fn main() {
 
     build
         .file("src/geo/lart.cpp")
-        .file("Clipper2/CPP/Clipper2Lib/include/clipper2/clipper.h")
         .file("Clipper2/CPP/Clipper2Lib/src/clipper.engine.cpp")
         .file("Clipper2/CPP/Clipper2Lib/src/clipper.offset.cpp");
 
