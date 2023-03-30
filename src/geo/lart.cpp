@@ -139,7 +139,8 @@ Geometry buffer(Geometry const &geo, double delta)
     for (auto const &path : geo.paths)
         off.AddPath(to_path64(path, precision), Clipper2Lib::JoinType::Round, Clipper2Lib::EndType::Round);
 
-    Clipper2Lib::Paths64 paths = off.Execute(delta * precision);
+    Clipper2Lib::Paths64 paths;
+    off.Execute(delta * precision, paths);
 
     Polygon poly;
     poly.areas.reserve(paths.size());
