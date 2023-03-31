@@ -11,7 +11,7 @@ use std::{
     ffi::OsStr,
     fs,
     io::{self, BufWriter, Write},
-    path::Path as FsPath,
+    path::{Path as FsPath, PathBuf},
 };
 
 pub use rand::prelude::*;
@@ -160,37 +160,7 @@ impl Sketch {
     }
 
     pub fn save(&self) -> io::Result<()> {
-        let outdir = FsPath::new(&self.name);
-
-        if !outdir.is_dir() {
-            fs::create_dir(outdir)?;
-        }
-
-        let get_next_free_name = || -> io::Result<String> {
-            let mut last = 0;
-            for f in fs::read_dir(outdir)? {
-                let f = f?.path();
-
-                if !f.is_file() || f.extension() != Some(OsStr::new("svg")) {
-                    continue;
-                }
-
-                let n = f.file_stem().and_then(|n| {
-                    n.to_string_lossy()
-                        .trim_start_matches(&self.name)
-                        .trim_start_matches('-')
-                        .parse()
-                        .ok()
-                });
-                if let Some(n) = n {
-                    last = last.max(n);
-                }
-            }
-
-            Ok(format!("{}-{}.svg", self.name, last + 1))
-        };
-
-        let outpath = outdir.join(get_next_free_name()?);
+        let outpath = self.get_output_filepath("svg")?;
         {
             let out = fs::File::create(&outpath)?;
             let mut out = BufWriter::new(out);
@@ -269,6 +239,91 @@ impl Sketch {
         skv_log!("SVG", outpath);
 
         Ok(())
+    }
+
+    pub fn save_hpgl(&self) -> io::Result<()> {
+        let outpath = self.get_output_filepath("hpgl")?;
+
+        let out = fs::File::create(&outpath)?;
+        let mut out = BufWriter::new(out);
+
+        writeln!(out, "IN;")?;
+        writeln!(out, "SP1;")?;
+
+        let mut dump_path = |path: &crate::Path| -> io::Result<()> {
+            if path.is_empty() {
+                return Ok(());
+            }
+
+            writeln!(
+                out,
+                "PU{}{};",
+                path.first().unwrap().x,
+                path.first().unwrap().y
+            )?;
+
+            write!(out, "PD")?;
+            for vv in path.iter().take(path.len() - 1) {
+                write!(out, "{},{},", vv.x, vv.y)?;
+            }
+            writeln!(
+                out,
+                "{},{};",
+                path.last().unwrap().x,
+                path.last().unwrap().y
+            )?;
+            Ok(())
+        };
+
+        for l in self.layers.values() {
+            let g = l.geo();
+            for p in &g.polygons {
+                if p.is_empty() {
+                    continue;
+                }
+                for p in &p.areas {
+                    dump_path(&p)?;
+                }
+            }
+
+            for p in &g.paths {
+                dump_path(&p)?;
+            }
+        }
+
+        writeln!(out, "PU")?;
+
+        Ok(())
+    }
+
+    fn get_output_filepath(&self, ext: &str) -> io::Result<PathBuf> {
+        let outdir = FsPath::new(&self.name);
+
+        if !outdir.is_dir() {
+            fs::create_dir(outdir)?;
+        }
+
+        let mut last = 0;
+        for f in fs::read_dir(outdir)? {
+            let f = f?.path();
+
+            if !f.is_file() || f.extension() != Some(OsStr::new(ext)) {
+                continue;
+            }
+
+            let n = f.file_stem().and_then(|n| {
+                n.to_string_lossy()
+                    .trim_start_matches(&self.name)
+                    .trim_start_matches('-')
+                    .parse()
+                    .ok()
+            });
+            if let Some(n) = n {
+                last = last.max(n);
+            }
+        }
+
+        Ok(outdir.join(format!("{}-{}.{ext}", self.name, last + 1)))
     }
 }
 

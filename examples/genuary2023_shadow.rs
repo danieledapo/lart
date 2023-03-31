@@ -78,4 +78,5 @@ fn main() {
 
     // doc.fit_to_page(20.0);
     doc.save().unwrap();
+    doc.save_hpgl().unwrap();
 }
