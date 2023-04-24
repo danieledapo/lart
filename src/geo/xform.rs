@@ -56,6 +56,12 @@ impl Xform {
 
         Self::xlate(-src.center()) * Self::scale(v(sf, sf)) * Self::xlate(dst.center())
     }
+
+    pub fn stretched_rect_to_rect(src: &Rect, dst: &Rect) -> Self {
+        Self::xlate(-src.center())
+            * Self::scale(v(dst.width() / src.width(), dst.height() / src.height()))
+            * Self::xlate(dst.center())
+    }
 }
 
 impl<'a> MulAssign<&'a Xform> for Xform {
