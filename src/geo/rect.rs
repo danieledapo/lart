@@ -109,11 +109,25 @@ impl Rect {
     }
 
     pub fn subdivide(&self, xdivs: u32, ydivs: u32) -> impl Iterator<Item = Rect> + '_ {
+        self.enumerate_subdivide(xdivs, ydivs).map(|(_, _, r)| r)
+    }
+
+    pub fn enumerate_subdivide(
+        &self,
+        xdivs: u32,
+        ydivs: u32,
+    ) -> impl Iterator<Item = (u32, u32, Rect)> + '_ {
         let d = v(self.width(), self.height()) / v(xdivs, ydivs);
 
         (0..ydivs)
             .flat_map(move |r| (0..xdivs).map(move |c| (r, c)))
-            .map(move |(r, c)| Rect::with_dimensions(self.min + d * v(c, r), d.x, d.y))
+            .map(move |(r, c)| {
+                (
+                    c,
+                    r,
+                    Rect::with_dimensions(self.min + d * v(c, r), d.x, d.y),
+                )
+            })
     }
 
     pub fn closed_path(&self) -> Path {
