@@ -104,6 +104,10 @@ impl Rect {
         self.max
     }
 
+    pub fn contains(&self, v: V) -> bool {
+        self.min.x <= v.x && self.max.x >= v.x && self.min.y <= v.y && self.max.y >= v.y
+    }
+
     pub fn subdivide(&self, xdivs: u32, ydivs: u32) -> impl Iterator<Item = Rect> + '_ {
         let d = v(self.width(), self.height()) / v(xdivs, ydivs);
 
