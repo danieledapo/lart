@@ -3,6 +3,7 @@ pub mod circle_packing;
 mod simplify;
 pub mod spline;
 pub mod voro_tri;
+pub mod wfc;
 
 use std::f64::consts::TAU;
 
