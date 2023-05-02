@@ -1,5 +1,6 @@
 pub mod bool_ops;
 pub mod geometry;
+pub mod grid;
 pub mod path;
 pub mod polygon;
 pub mod rect;
@@ -8,6 +9,7 @@ pub mod utils;
 pub mod v;
 pub mod xform;
 
+pub use grid::Grid;
 pub use rect::*;
 pub use types::*;
 pub use utils::*;
