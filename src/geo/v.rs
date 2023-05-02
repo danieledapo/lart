@@ -1,5 +1,3 @@
-use std::ops::Neg;
-
 use rand::{distributions::uniform::SampleRange, Rng};
 
 use crate::{Bbox, Rect, V};
@@ -32,6 +30,17 @@ impl V {
 
     pub fn angle(self) -> f64 {
         f64::atan2(self.y, self.x)
+    }
+
+    /// Return a value representing where the current point is wrt to the
+    /// directed line going from point a to b.
+    ///
+    /// The returned value is:
+    /// - positive value if the current point is on the left of the line
+    /// - negative value if it's on the right of the line
+    /// - 0 if the points are collinear
+    pub fn orient(self, a: Self, b: Self) -> f64 {
+        (b.x - a.x) * (self.y - a.y) - (b.y - a.y) * (self.x - a.x)
     }
 
     pub fn dist(self, rhs: Self) -> f64 {
@@ -126,7 +135,7 @@ impl_num_op!(Assign, MulAssign, mul_assign);
 impl_num_op!(Assign, DivAssign, div_assign);
 impl_num_op!(Assign, RemAssign, rem_assign);
 
-impl Neg for V {
+impl std::ops::Neg for V {
     type Output = V;
 
     fn neg(self) -> Self::Output {
