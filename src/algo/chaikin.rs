@@ -1,6 +1,12 @@
 use crate::{Geometry, Path, Polygon};
 
 pub trait Chaikin {
+    /// Smooth a geometry using the [Chaikin algorithm][0] using the given ratio
+    /// in [0,1]. The higher the ratio the higher the smoothness of the final
+    /// curve.
+    ///
+    /// [0]:
+    ///     https://www.cs.unc.edu/~dm/UNC/COMP258/LECTURES/Chaikins-Algorithm.pdf
     fn chaikin(&self, ratio: f64) -> Self;
 }
 
@@ -39,6 +45,10 @@ fn chaikin_impl(path: &Path, ratio: f64, closed: bool) -> Path {
 
     let mut new = Path::with_capacity(path.len() * 2 + if closed { 2 } else { 0 });
 
+    // if the path is not closed make sure to preserve the endpoints so that we
+    // don't shrunk the path, if it's closed then throw them away as it's
+    // expected that the final shape is actually smaller than the original as
+    // the corners have been smoothed
     if !closed {
         new.push(path[0]);
     }

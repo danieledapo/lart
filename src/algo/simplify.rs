@@ -1,6 +1,13 @@
 use crate::{Geometry, Path, Polygon, V};
 
 pub trait Simplify {
+    /// Simplify a given geometry with the given eps using the
+    /// [Ramer-Douglas-Peucker][0] simplification algorithm.
+    ///
+    /// The higher the epsilon the more simplified and butchered the final path.
+    ///
+    /// [0]:
+    ///     https://en.wikipedia.org/wiki/Ramer%E2%80%93Douglas%E2%80%93Peucker_algorithm
     fn simplify(&self, eps: f64) -> Self;
 }
 

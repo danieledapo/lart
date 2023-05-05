@@ -1,6 +1,9 @@
 use crate::{Geometry, Polygon, Rect, V};
 
-pub fn triangulate(pts: impl AsRef<[V]>) -> Geometry {
+/// Find a [triangulation][0] of the given set of points.
+///
+/// [0]: https://en.wikipedia.org/wiki/Triangulation
+pub fn triangulate(pts: &[V]) -> Geometry {
     let pts = pts
         .as_ref()
         .iter()
@@ -23,7 +26,14 @@ pub fn triangulate(pts: impl AsRef<[V]>) -> Geometry {
     Geometry::from_polygons(polys)
 }
 
-pub fn voronoi(pts: impl AsRef<[V]>, clip: &Rect) -> Geometry {
+/// Generate the [Voronoi diagram][0] for the given set of points clipping it to
+/// the given rect.
+///
+/// The clipping rect is necessary because the Voronoi diagram extends to
+/// infinity geometrically speaking, but that's likely not what we want.
+///
+/// [0]: https://en.wikipedia.org/wiki/Voronoi_diagram
+pub fn voronoi(pts: &[V], clip: &Rect) -> Geometry {
     let pts = pts
         .as_ref()
         .iter()

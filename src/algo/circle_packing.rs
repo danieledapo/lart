@@ -2,6 +2,12 @@ use rand::Rng;
 
 use crate::{Rect, V};
 
+/// A CirclePacker allows to pack circles inside a Rect following a set of
+/// parameters without ever creating overlapping circles.
+///
+/// It is possible to customize the minimum and maximum radius of the genrated
+/// circles and whether it's allowed to generate circles inside other circles,
+/// but always without overlapping circles.
 pub struct CirclePacker {
     circles: Vec<(V, f64)>,
     pub bbox: Rect,
@@ -12,6 +18,7 @@ pub struct CirclePacker {
 }
 
 impl CirclePacker {
+    /// Create a new CirclePacker meant to pack circles in the given Rect.
     pub fn new(bbox: Rect) -> Self {
         let max_radius = f64::min(bbox.width(), bbox.height()) / 2.0;
         Self {
@@ -24,10 +31,16 @@ impl CirclePacker {
         }
     }
 
+    /// Return all the circles packed so far.
+    ///
+    /// The returned slice contains a tuple of circle center and radius.
     pub fn circles(&self) -> &[(V, f64)] {
         &self.circles
     }
 
+    /// Try to packa another circle in the current solution.
+    ///
+    /// Does not guarantee that a new circle is actually added to the solution.
     pub fn generate(&mut self, rng: &mut impl Rng) {
         let mut bbox = self.bbox.clone();
         bbox.pad(-self.margin);

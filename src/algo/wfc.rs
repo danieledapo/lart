@@ -2,8 +2,19 @@ use rand::{distributions::WeightedIndex, prelude::*};
 
 use crate::{F64Key, Grid};
 
+/// The Border of a Tile.
+///
+/// Two Borders are considered compatible if they are equal.
 pub type Border = u8;
 
+/// A Tile in Wave Function Collapse.
+///
+/// It's made up of 4 Borders that specify which Tiles can be next to each other
+/// (the borders must match).
+///
+/// Moreover, each Tile has a weight that can be used to prefer some Tiles
+/// rather than others when generating a solution. The higher the weight the
+/// more likely it is for that Tile to be chosen.
 #[derive(Debug, Clone)]
 pub struct Tile {
     pub left: Border,
@@ -14,6 +25,9 @@ pub struct Tile {
 }
 
 impl Tile {
+    /// Create a new Tile with the given Borders.
+    ///
+    /// The weight is set to 1.
     pub const fn new(left: Border, top: Border, right: Border, bottom: Border) -> Self {
         Self {
             left,
@@ -24,12 +38,21 @@ impl Tile {
         }
     }
 
+    /// Set the weight of the Tile, any positive number works.
     pub const fn with_weight(mut self, w: f64) -> Self {
         self.weight = w;
         self
     }
 }
 
+/// Run a sort of [Wave Function Collapse][0] algorithm with the given tiles
+/// generating a solution of the given size.
+///
+/// The result is a grid that contains for each cell the index of the
+/// corresponding Tile. Returns None if it was not able to find a solution given
+/// the set of Tiles.
+///
+/// [0]: https://github.com/mxgmn/WaveFunctionCollapse
 pub fn solve(
     rng: &mut impl Rng,
     tiles: &[Tile],
@@ -113,6 +136,11 @@ impl<'t, R: Rng> State<'t, R> {
 
             self.wave[(x, y)] = tile_ixs[candi];
 
+            // NOTE: I don't think this exactly matches with the original WFC because here we're
+            // updating the entropy of the immediate neighbors only, but that's not really accurate
+            // because we should update the entropy of all the second level neighbors and so on.
+            // However, given that the candidates for every position are not tracked it's hard to
+            // recursively update the entropy.
             for (nx, ny) in self.entropy.neighbors4(x, y) {
                 self.update_entropy(nx, ny);
             }
