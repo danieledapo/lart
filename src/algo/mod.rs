@@ -1,7 +1,7 @@
 pub mod chaikin;
 pub mod circle_packing;
 pub mod convex_hull;
-mod simplify;
+pub mod simplify;
 pub mod spline;
 pub mod split;
 pub mod voro_tri;
@@ -13,6 +13,7 @@ pub use chaikin::*;
 pub use circle_packing::*;
 pub use convex_hull::*;
 pub use simplify::*;
+pub use split::*;
 pub use voro_tri::*;
 
 use crate::V;
