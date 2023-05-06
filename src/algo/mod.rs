@@ -3,6 +3,7 @@ pub mod circle_packing;
 pub mod convex_hull;
 mod simplify;
 pub mod spline;
+pub mod split;
 pub mod voro_tri;
 pub mod wfc;
 

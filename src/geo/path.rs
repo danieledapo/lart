@@ -29,6 +29,10 @@ impl Path {
         self.points.len()
     }
 
+    pub fn clear(&mut self) {
+        self.points.clear();
+    }
+
     pub fn first(&self) -> Option<V> {
         self.points.first().cloned()
     }
