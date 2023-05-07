@@ -148,3 +148,9 @@ impl<W: Into<f64>> From<(W, W)> for V {
         V::new(x.into(), y.into())
     }
 }
+
+impl std::fmt::Debug for V {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("v").field(&self.x).field(&self.y).finish()
+    }
+}

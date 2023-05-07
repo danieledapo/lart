@@ -1,12 +1,12 @@
 #[cxx::bridge]
 pub mod ffi {
-    #[derive(Debug, Default, Clone, Copy, PartialEq)]
+    #[derive(Default, Clone, Copy, PartialEq)]
     pub struct V {
         x: f64,
         y: f64,
     }
 
-    #[derive(Debug, Clone, PartialEq)]
+    #[derive(Clone, PartialEq)]
     pub struct Path {
         points: Vec<V>,
     }
