@@ -17,6 +17,9 @@ pub use types::*;
 pub use utils::*;
 pub use xform::Xform;
 
+pub const PRECISION: f64 = 1e-6;
+pub const PRECISION_2: f64 = PRECISION * PRECISION;
+
 pub fn v(x: impl Into<f64>, y: impl Into<f64>) -> V {
     V::new(x.into(), y.into())
 }

@@ -1,6 +1,6 @@
 use rand::{distributions::uniform::SampleRange, Rng};
 
-use crate::{Bbox, Rect, V};
+use crate::{Bbox, Rect, PRECISION_2, V};
 
 impl V {
     pub const fn new(x: f64, y: f64) -> Self {
@@ -73,6 +73,10 @@ impl V {
 
     pub fn abs(self) -> Self {
         Self::new(self.x.abs(), self.y.abs())
+    }
+
+    pub fn almost_equal(self, rhs: Self) -> bool {
+        self.dist2(rhs) < PRECISION_2
     }
 }
 

@@ -1,4 +1,4 @@
-use crate::V;
+use crate::{PRECISION, V};
 
 /// Linearly interpolate between the two given points with the given t
 /// parameter.
@@ -46,7 +46,7 @@ pub fn line_x_line(l1: (V, V), l2: (V, V)) -> Option<V> {
 /// returning the parameter along the first line, if any.
 pub fn line_x_line_t((a, b): (V, V), (c, d): (V, V)) -> Option<f64> {
     let det = (a.x - b.x) * (c.y - d.y) - (a.y - b.y) * (c.x - d.x);
-    if det.abs() < 1e-6 {
+    if det.abs() < PRECISION {
         return None;
     }
     let num = (a.x - c.x) * (c.y - d.y) - (a.y - c.y) * (c.x - d.x);
