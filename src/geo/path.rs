@@ -1,6 +1,6 @@
 use std::ops::{Index, IndexMut, RangeBounds};
 
-use crate::{bbox_union, path, Bbox, Path, Rect, V};
+use crate::{bbox_union, path, v, Bbox, Path, Rect, V};
 
 impl Path {
     pub const fn new() -> Self {
@@ -69,6 +69,14 @@ impl Path {
         self.segments().map(|(a, b)| a.dist2(b)).sum()
     }
 
+    pub fn centroid(&self) -> V {
+        let mut c = v(0, 0);
+        for p in self.iter() {
+            c += p
+        }
+        c / (self.points.len() as f64)
+    }
+
     pub fn slice(&self, r: impl RangeBounds<usize>) -> Path {
         let mut p = Path::new();
         p.points
@@ -78,6 +86,10 @@ impl Path {
 
     pub fn reverse(&mut self) {
         self.points.reverse();
+    }
+
+    pub fn dedup(&mut self) {
+        self.points.dedup();
     }
 }
 
