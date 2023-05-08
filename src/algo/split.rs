@@ -35,16 +35,48 @@ pub fn split_convex_polygon(p: &Path, l: (V, V)) -> Vec<Path> {
     let mut a = Path::new();
     let mut b = Path::new();
 
+    let mut last_endpoint_match = false;
     for i in 0..p.len() {
         let s = (p[i], p[(i + 1) % p.len()]);
-        a.push(s.0);
-        if let Some(x) = seg_x_line(s, l) {
-            a.push(x);
 
-            std::mem::swap(&mut a, &mut b);
-            a.push(x);
+        if s.0 == s.1 {
+            continue;
         }
+
+        a.push(s.0);
+
+        let x;
+        if last_endpoint_match {
+            x = s.0;
+        } else if let Some(intr) = seg_x_line(s, l) {
+            x = intr;
+            // if the intersection is almost equal to the final endpoint skip
+            // this segment, the intersection will be added only once at the
+            // next segment.
+            if x.almost_equal(s.1) {
+                last_endpoint_match = true;
+                continue;
+            }
+        } else {
+            continue;
+        }
+
+        a.push(x);
+
+        std::mem::swap(&mut a, &mut b);
+        a.push(x);
+
+        last_endpoint_match = false;
     }
 
-    [a, b].into_iter().filter(|pp| !pp.is_empty()).collect()
+    if last_endpoint_match {
+        a.push(p[0]);
+    }
+
+    a.dedup();
+    b.dedup();
+
+    // the above loop can generate lines if there are coincident points, keep
+    // only polygons
+    [a, b].into_iter().filter(|pp| pp.len() > 2).collect()
 }
