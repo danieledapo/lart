@@ -32,7 +32,12 @@ pub fn seg_x_line(seg: (V, V), l: (V, V)) -> Option<V> {
 /// two points returning the parameter along the first segment of the
 /// intersection, if any.
 pub fn seg_x_line_t(seg: (V, V), l: (V, V)) -> Option<f64> {
-    let t = line_x_line_t(seg, l)?;
+    let mut t = line_x_line_t(seg, l)?;
+    if (-PRECISION..0.0).contains(&t) {
+        t = 0.0;
+    } else if (1.0..1.0 + PRECISION).contains(&t) {
+        t = 1.0;
+    }
     (0.0..=1.0).contains(&t).then_some(t)
 }
 
