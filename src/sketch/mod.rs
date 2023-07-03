@@ -160,15 +160,19 @@ impl Sketch {
     }
 
     pub fn save(&self) -> io::Result<()> {
-        let outdir = FsPath::new(&self.name);
-
+        let outdir = FsPath::new("wip");
         if !outdir.is_dir() {
             fs::create_dir(outdir)?;
         }
 
+        let outdir = outdir.join(&self.name);
+        if !outdir.is_dir() {
+            fs::create_dir(&outdir)?;
+        }
+
         let get_next_free_name = || -> io::Result<String> {
             let mut last = 0;
-            for f in fs::read_dir(outdir)? {
+            for f in fs::read_dir(&outdir)? {
                 let f = f?.path();
 
                 if !f.is_file() || f.extension() != Some(OsStr::new("svg")) {
