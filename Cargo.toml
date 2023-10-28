@@ -9,8 +9,8 @@ edition = "2021"
 cxx = "1.0"
 rand_xoshiro = "0.6"
 rand = "0.8"
-voronoice = "0.2.0"
-delaunator = "1.0.1"
+voronoice = "0.2"
+delaunator = "1.0"
 
 [build-dependencies]
 cxx-build = "1.0"
