@@ -1,6 +1,7 @@
 pub mod chaikin;
 pub mod circle_packing;
 pub mod convex_hull;
+pub mod kmeans;
 pub mod simplify;
 pub mod spline;
 pub mod split;
@@ -12,6 +13,7 @@ use std::f64::consts::TAU;
 pub use chaikin::*;
 pub use circle_packing::*;
 pub use convex_hull::*;
+pub use kmeans::*;
 pub use simplify::*;
 pub use split::*;
 pub use voro_tri::*;
