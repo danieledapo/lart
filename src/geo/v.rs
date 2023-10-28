@@ -76,7 +76,9 @@ impl V {
     }
 
     pub fn almost_equal(self, rhs: Self) -> bool {
-        self.dist2(rhs) < PRECISION_2
+        // NOTE: we still first check for exact equality because it's faster and
+        // cheaper than computing the actual distance.
+        self == rhs || self.dist2(rhs) < PRECISION_2
     }
 }
 
