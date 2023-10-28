@@ -44,7 +44,7 @@ pub struct F64Key(pub f64);
 impl Eq for F64Key {}
 impl PartialEq for F64Key {
     fn eq(&self, other: &Self) -> bool {
-        self.0.total_cmp(&other.0).is_eq()
+        self.cmp(other).is_eq()
     }
 }
 
@@ -55,6 +55,6 @@ impl Ord for F64Key {
 }
 impl PartialOrd for F64Key {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        self.0.total_cmp(&other.0).into()
+        Some(self.cmp(other))
     }
 }
