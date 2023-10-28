@@ -160,3 +160,9 @@ impl std::fmt::Debug for V {
         f.debug_tuple("v").field(&self.x).field(&self.y).finish()
     }
 }
+
+impl std::iter::Sum for V {
+    fn sum<I: Iterator<Item = Self>>(iter: I) -> Self {
+        iter.fold(V::new(0.0, 0.0), |a, b| a + b)
+    }
+}
