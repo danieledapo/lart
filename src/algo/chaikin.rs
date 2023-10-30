@@ -61,6 +61,13 @@ fn chaikin_impl(path: &Path, ratio: f64, closed: bool) -> Path {
 
     if !closed {
         new.push(path.last().unwrap());
+    } else {
+        // if the path is closed be sure to smooth out the closing segment too
+        let s = path.last().unwrap();
+        let e = path[0];
+        let d = e - s;
+        new.push(s + ratio * d);
+        new.push(e - ratio * d);
     }
 
     new
