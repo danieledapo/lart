@@ -2,7 +2,7 @@ use crate::{Geometry, Path, Polygon};
 
 pub trait Chaikin {
     /// Smooth a geometry using the [Chaikin algorithm][0] using the given ratio
-    /// in [0,1]. The higher the ratio the higher the smoothness of the final
+    /// in `0..1`. The higher the ratio the higher the smoothness of the final
     /// curve.
     ///
     /// [0]:
