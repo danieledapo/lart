@@ -61,6 +61,10 @@ impl Path {
         self.iter().zip(self.iter().skip(1))
     }
 
+    pub fn closed_segments(&self) -> impl Iterator<Item = (V, V)> + '_ {
+        self.iter().zip(self.points.iter().copied().cycle().skip(1))
+    }
+
     pub fn norm(&self) -> f64 {
         self.segments().map(|(a, b)| a.dist(b)).sum()
     }
