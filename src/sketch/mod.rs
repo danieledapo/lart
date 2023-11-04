@@ -127,10 +127,20 @@ impl Sketch {
         self.layers.entry(self.layer_id).or_default()
     }
 
+    pub fn autocenter(&mut self) {
+        let Some(bbox) = self.layers_bbox() else {
+            return;
+        };
+
+        let xform = Xform::xlate(-bbox.center() + self.page_bbox().center());
+        for l in self.layers.values_mut() {
+            l.geo *= &xform;
+        }
+    }
+
     pub fn fit_to_page(&mut self, margin: f64) {
-        let bbox = match self.layers_bbox() {
-            None => return,
-            Some(b) => b,
+        let Some(bbox) = self.layers_bbox() else {
+            return;
         };
 
         let mut page_bbox = self.page_bbox();
