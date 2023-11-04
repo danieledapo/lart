@@ -33,6 +33,24 @@ impl Rect {
         a
     }
 
+    pub fn with_center(self, c: V) -> Self {
+        let d = self.dimensions();
+        Self::with_dimensions(c - d / 2.0, d.x, d.y)
+    }
+
+    pub fn scale(&mut self, s: f64) {
+        assert!(s > 0.0);
+        let c = self.center();
+        self.min = (self.min - c) * s + c;
+        self.max = (self.max - c) * s + c;
+    }
+
+    pub fn scaled(&self, s: f64) -> Self {
+        let mut a = self.clone();
+        a.scale(s);
+        a
+    }
+
     pub fn expand(&mut self, v: V) {
         self.min.x = f64::min(self.min.x, v.x);
         self.min.y = f64::min(self.min.y, v.y);
@@ -78,6 +96,10 @@ impl Rect {
 
     pub fn height(&self) -> f64 {
         self.max.y - self.min.y
+    }
+
+    pub fn radius(&self) -> f64 {
+        self.dimensions().norm() / 2.0
     }
 
     pub fn area(&self) -> f64 {
