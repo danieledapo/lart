@@ -12,6 +12,16 @@ impl Polygon {
     pub fn is_empty(&self) -> bool {
         self.areas.iter().all(Path::is_empty)
     }
+
+    pub fn boundary(&self) -> &Path {
+        debug_assert!(self.areas.len() == 1);
+        &self.areas[0]
+    }
+
+    pub fn into_boundary(mut self) -> Path {
+        debug_assert!(self.areas.len() == 1);
+        self.areas.swap_remove(0)
+    }
 }
 
 impl Bbox for Polygon {
