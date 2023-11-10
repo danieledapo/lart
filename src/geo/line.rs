@@ -1,10 +1,4 @@
-use crate::{PRECISION, V};
-
-/// Linearly interpolate between the two given points with the given t
-/// parameter.
-pub fn linterp(a: V, b: V, t: f64) -> V {
-    a + (b - a) * t
-}
+use crate::{linterp, PRECISION, V};
 
 /// Find the intersection between two segments returning the position of the
 /// intersection, if any.

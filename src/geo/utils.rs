@@ -1,3 +1,5 @@
+use std::ops::{Add, Mul, Sub};
+
 pub fn frange(mut a: f64, b: f64, s: f64) -> impl Iterator<Item = f64> {
     std::iter::from_fn(move || {
         if (b - a).abs() < s.abs() {
@@ -8,6 +10,15 @@ pub fn frange(mut a: f64, b: f64, s: f64) -> impl Iterator<Item = f64> {
         a += s;
         Some(v)
     })
+}
+
+/// Linearly interpolate between the two given numbers or points with the given
+/// t parameter.
+pub fn linterp<N>(a: N, b: N, t: f64) -> N
+where
+    N: Add<Output = N> + Sub<Output = N> + Mul<f64, Output = N> + Copy,
+{
+    a + (b - a) * t
 }
 
 /// Map the input value from the given range to the unit range [0..1]
