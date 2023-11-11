@@ -33,6 +33,23 @@ impl Path {
         self.points.clear();
     }
 
+    pub fn close(&mut self) {
+        if let Some(p) = self.first() {
+            if p != self.last().unwrap() {
+                self.push(p);
+            }
+        }
+    }
+
+    pub fn closed(mut self) -> Self {
+        self.close();
+        self
+    }
+
+    pub fn is_closed(&self) -> bool {
+        self.first() == self.last()
+    }
+
     pub fn first(&self) -> Option<V> {
         self.points.first().cloned()
     }
