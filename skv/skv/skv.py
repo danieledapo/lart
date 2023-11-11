@@ -20,6 +20,7 @@ from PySide6.QtWidgets import (
     QSpinBox,
     QDoubleSpinBox,
     QCheckBox,
+    QComboBox,
 )
 from PySide6.QtGui import (
     QPainter,
@@ -173,6 +174,11 @@ class Skv(QMainWindow):
                 w = QCheckBox(self)
                 w.setChecked(value)
                 w.valueChanged.connect(edit_over(param, lambda t: t != 0))
+            elif ty == "choice":
+                w = QComboBox(self)
+                w.addItems(schema["choices"])
+                w.setCurrentText(value)
+                w.currentTextChanged.connect(edit_over(param))
             else:
                 print("unsupported param type", ty)
                 continue
