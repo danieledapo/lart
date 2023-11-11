@@ -79,6 +79,7 @@ class Skv(QMainWindow):
         command = self.command[:]
         for param, value in self.values.items():
             command.append("--" + param)
+            print(param, value, json.dumps(value))
             command.append(json.dumps(value))
 
         print(command)
@@ -130,6 +131,12 @@ class Skv(QMainWindow):
         self.process = None
 
     def rebuildParmsWidget(self):
+        def edit_over(param, get_v=lambda x: x):
+            def inner(*args, **kwargs):
+                self.values[param] = get_v(*args, **kwargs)
+                self.fireCommand()
+            return inner
+
         if self.parms_dock:
             self.removeDockWidget(self.parms_dock)
 
@@ -145,31 +152,27 @@ class Skv(QMainWindow):
 
             value = self.values[param]
 
-            def edit_over(p, v):
-                self.values[p] = v
-                self.fireCommand()
-
             ty = schema["type"]
             if ty == "string":
                 w = QLineEdit(self)
                 w.setText(value)
-                w.editingFinished.connect(lambda p=param: edit_over(p, w.text()))
+                w.textEdited.connect(edit_over(param))
             elif ty == "int":
                 w = QSpinBox(self)
                 w.setMinimum(max(-(2**31), schema["min"]))
                 w.setMaximum(min(2**31 - 1, schema["max"]))
                 w.setValue(value)
-                w.valueChanged.connect(lambda v, p=param: edit_over(p, v))
+                w.valueChanged.connect(edit_over(param))
             elif ty == "double":
                 w = QDoubleSpinBox(self)
                 w.setMinimum(float(schema["min"]))
                 w.setMaximum(float(schema["max"]))
                 w.setValue(value)
-                w.valueChanged.connect(lambda v, p=param: edit_over(p, v))
+                w.valueChanged.connect(edit_over(param))
             elif ty == "bool":
                 w = QCheckBox(self)
                 w.setChecked(value)
-                w.stateChanged.connect(lambda t, p=param: edit_over(p, t != 0))
+                w.valueChanged.connect(edit_over(param, lambda t: t != 0))
             else:
                 print("unsupported param type", ty)
                 continue
