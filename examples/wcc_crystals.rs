@@ -116,8 +116,8 @@ fn main() {
     for (cry, text) in crystals {
         let boundary = &cry - &geos - Geometry::from(clip.clone());
 
-        for p in cry.polygons() {
-            let p = p & (&boundary);
+        for p in cry.paths() {
+            let p = Geometry::from(p.clone()) & (&boundary);
             geos.extend(&p);
             doc.geometry(p);
         }

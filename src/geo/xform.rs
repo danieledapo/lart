@@ -96,9 +96,6 @@ impl<'a> MulAssign<&'a Xform> for Polygon {
 
 impl<'a> MulAssign<&'a Xform> for Geometry {
     fn mul_assign(&mut self, rhs: &'a Xform) {
-        for p in &mut self.polygons {
-            *p *= rhs;
-        }
         for p in &mut self.paths {
             *p *= rhs;
         }

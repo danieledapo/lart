@@ -25,10 +25,7 @@ impl Chaikin for Polygon {
 impl Chaikin for Geometry {
     fn chaikin(&self, ratio: f64) -> Self {
         let mut g = Geometry::new();
-
-        g.push_polygons(self.polygons.iter().map(|p| p.chaikin(ratio)));
         g.push_paths(self.paths.iter().map(|p| p.chaikin(ratio)));
-
         g
     }
 }

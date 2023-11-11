@@ -18,7 +18,6 @@ pub mod ffi {
 
     #[derive(Debug, Clone)]
     pub struct Geometry {
-        polygons: Vec<Polygon>,
         paths: Vec<Path>,
     }
 
@@ -28,9 +27,8 @@ pub mod ffi {
         type Clipper;
 
         fn new_clipper() -> UniquePtr<Clipper>;
-        fn add_polygon(self: Pin<&mut Clipper>, polygon: &Polygon);
-        fn add_polyline(self: Pin<&mut Clipper>, polyline: &Path);
-        fn add_clip(self: Pin<&mut Clipper>, polygon: &Polygon);
+        fn add_subject(self: Pin<&mut Clipper>, polygon: &Path);
+        fn add_clip(self: Pin<&mut Clipper>, polygon: &Path);
 
         fn union_(self: Pin<&mut Clipper>) -> Geometry;
         fn intersection(self: Pin<&mut Clipper>) -> Geometry;

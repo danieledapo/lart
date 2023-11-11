@@ -17,7 +17,7 @@ use std::{
 pub use rand::prelude::*;
 pub use rand_xoshiro::Xoshiro256StarStar;
 
-use crate::{v, Geometry, Rect, Xform};
+use crate::{v, Bbox, Geometry, Rect, Xform};
 
 pub type MyRng = Xoshiro256StarStar;
 
@@ -231,7 +231,7 @@ impl Sketch {
             for (lid, layer) in &self.layers {
                 let geo = &layer.geo;
 
-                if geo.polygons.is_empty() && geo.paths.is_empty() {
+                if geo.paths.is_empty() {
                     continue;
                 }
 
@@ -249,21 +249,6 @@ impl Sketch {
                     write!(out, r#"<polyline points=""#)?;
                     for p in path.points() {
                         write!(out, "{},{} ", p.x, p.y)?;
-                    }
-                    writeln!(out, r#""/>"#)?;
-                }
-
-                for poly in &geo.polygons {
-                    write!(out, r#"<path d=""#)?;
-                    for path in &poly.areas {
-                        if path.is_empty() {
-                            continue;
-                        }
-                        write!(out, r#"M{},{} "#, path.points()[0].x, path.points[0].y)?;
-                        for p in path.points().iter().skip(1) {
-                            write!(out, r#"L{},{} "#, p.x, p.y)?;
-                        }
-                        write!(out, "Z ")?;
                     }
                     writeln!(out, r#""/>"#)?;
                 }

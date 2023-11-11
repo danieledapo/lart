@@ -19,14 +19,11 @@ macro_rules! bool_op_body {
     (Geometry, Geometry, $lhs: ident, $rhs: ident, $op: ident) => {{
         let mut clipper = new_clipper();
 
-        for poly in &$lhs.polygons {
-            clipper.pin_mut().add_polygon(poly);
-        }
         for path in &$lhs.paths {
-            clipper.pin_mut().add_polyline(path);
+            clipper.pin_mut().add_subject(path);
         }
 
-        for clip in &$rhs.polygons {
+        for clip in &$rhs.paths {
             clipper.pin_mut().add_clip(clip);
         }
 
@@ -36,14 +33,11 @@ macro_rules! bool_op_body {
     (Geometry, Polygon, $lhs: ident, $rhs: ident, $op: ident) => {{
         let mut clipper = new_clipper();
 
-        for poly in &$lhs.polygons {
-            clipper.pin_mut().add_polygon(poly);
-        }
         for path in &$lhs.paths {
-            clipper.pin_mut().add_polyline(path);
+            clipper.pin_mut().add_subject(path);
         }
 
-        clipper.pin_mut().add_clip(&$rhs);
+        clipper.pin_mut().add_clip($rhs.boundary());
 
         clipper.pin_mut().$op()
     }};
@@ -51,9 +45,9 @@ macro_rules! bool_op_body {
     (Polygon, Geometry, $lhs: ident, $rhs: ident, $op: ident) => {{
         let mut clipper = new_clipper();
 
-        clipper.pin_mut().add_polygon(&$lhs);
+        clipper.pin_mut().add_subject($lhs.boundary());
 
-        for poly in &$rhs.polygons {
+        for poly in &$rhs.paths {
             clipper.pin_mut().add_clip(poly);
         }
 
@@ -63,8 +57,8 @@ macro_rules! bool_op_body {
     (Polygon, Polygon, $lhs: ident, $rhs: ident, $op: ident) => {{
         let mut clipper = new_clipper();
 
-        clipper.pin_mut().add_polygon(&$lhs);
-        clipper.pin_mut().add_clip(&$rhs);
+        clipper.pin_mut().add_subject($lhs.boundary());
+        clipper.pin_mut().add_clip($rhs.boundary());
 
         clipper.pin_mut().$op()
     }};

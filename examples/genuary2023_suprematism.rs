@@ -20,16 +20,16 @@ pub fn main() {
     ]))
     .buffer(5.0);
 
-    g.polygons
+    g.paths
         .sort_by_cached_key(|p| F64Key(p.bbox().unwrap().area()));
 
-    let small = Geometry::from(g.polygons[0].clone())
-        * Xform::scale_on(g.polygons[0].bbox().unwrap().center(), v(1.1, 1.1));
+    let small = Geometry::from(g.paths[0].clone())
+        * Xform::scale_on(g.paths[0].bbox().unwrap().center(), v(1.1, 1.1));
     let small =
         small.clone() * Xform::rot_on(small.bbox().unwrap().center(), doc.gen_range(0.0..=PI));
-    let big = Geometry::from(g.polygons.last().unwrap().clone())
+    let big = Geometry::from(g.paths.last().unwrap().clone())
         * Xform::scale_on(
-            g.polygons.last().unwrap().clone().bbox().unwrap().center(),
+            g.paths.last().unwrap().clone().bbox().unwrap().center(),
             v(1.1, 1.1),
         );
     let big = big.clone() * Xform::rot_on(big.bbox().unwrap().center(), doc.gen_range(0.0..=PI));

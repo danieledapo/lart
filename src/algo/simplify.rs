@@ -39,10 +39,6 @@ impl Simplify for Geometry {
             let p = p.simplify(eps);
             (!p.is_empty()).then_some(p)
         }));
-        g.push_polygons(self.polygons.iter().filter_map(|p| {
-            let p = p.simplify(eps);
-            (!p.is_empty()).then_some(p)
-        }));
 
         g
     }

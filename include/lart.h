@@ -12,9 +12,8 @@ class Clipper
 public:
     Clipper();
 
-    void add_polygon(Polygon const & /*polygon*/);
-    void add_polyline(Path const & /*polyline*/);
-    void add_clip(Polygon const & /*polygon*/);
+    void add_subject(Path const & /*subject*/);
+    void add_clip(Path const & /*polygon*/);
 
     Geometry union_();
     Geometry intersection();

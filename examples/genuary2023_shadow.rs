@@ -59,7 +59,9 @@ fn main() {
             pts.push(V::in_rect(&mut doc, &bbox));
         }
 
-        for g in voronoi(&pts, &bbox).polygons {
+        for g in voronoi(&pts, &bbox).paths {
+            let g = Geometry::from(g);
+
             let a = doc.gen_range(0.0..=TAU);
             let step = doc.gen_range(2..=10) as f64 / 2.0;
 
