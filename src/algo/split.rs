@@ -78,5 +78,13 @@ pub fn split_convex_polygon(p: &Path, l: (V, V)) -> Vec<Path> {
 
     // the above loop can generate lines if there are coincident points, keep
     // only polygons
-    [a, b].into_iter().filter(|pp| pp.len() > 2).collect()
+    [a, b]
+        .into_iter()
+        .filter(|pp| pp.len() > 2)
+        .map(|mut p| {
+            // close path so that it's always considered a closed polygon
+            p.push(p[0]);
+            p
+        })
+        .collect()
 }
