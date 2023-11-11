@@ -13,6 +13,13 @@ pub enum Schema {
     Bool(bool),
     Usize(usize),
     Isize(isize),
+    Choice(Choice),
+}
+
+#[derive(Clone, Debug)]
+pub struct Choice {
+    val: String,
+    choices: &'static [&'static str],
 }
 
 pub struct CliTokens {
@@ -171,6 +178,22 @@ impl Schema {
                     usize::MAX
                 )
             }
+            Schema::Choice(c) => {
+                write!(
+                    out,
+                    r#"{{"type": "choice", "default": "{def}", "choices": ["#,
+                    def = c.val
+                )?;
+
+                for (i, choice) in c.choices.iter().enumerate() {
+                    write!(out, r#""{}""#, choice)?;
+                    if i < c.choices.len() - 1 {
+                        write!(out, ",")?;
+                    }
+                }
+
+                write!(out, "]}}")
+            }
         }
     }
 }
@@ -211,6 +234,32 @@ impl CliArg for String {
 
     fn schema(&self) -> Schema {
         Schema::String(self.clone())
+    }
+}
+
+impl Choice {
+    pub fn new(s: &'static str, choices: &'static [&'static str]) -> Self {
+        Self {
+            val: s.to_string(),
+            choices,
+        }
+    }
+
+    pub fn value(&self) -> &str {
+        &self.val
+    }
+}
+
+impl CliArg for Choice {
+    fn parse_args(&mut self, args: &mut CliTokens) {
+        self.val.parse_args(args);
+        if !self.choices.contains(&self.val.as_str()) {
+            panic!("{} is not a valid choice", self.val);
+        }
+    }
+
+    fn schema(&self) -> Schema {
+        Schema::Choice(self.clone())
     }
 }
 
