@@ -2,12 +2,19 @@
 
 #include "clipper2/clipper.h"
 
-static Path to_path(Clipper2Lib::Path64 const &path64, double precision)
+static Path to_path(Clipper2Lib::Path64 const &path64, double precision, bool close)
 {
     Path pp;
     pp.points.reserve(path64.size());
     for (auto p : path64)
         pp.points.push_back(V{p.x / precision, p.y / precision});
+
+    if (close && !pp.points.empty() && pp.points[0] != pp.points.back())
+    {
+        V p = pp.points[0];
+        pp.points.push_back(p);
+    }
+
     return pp;
 }
 
@@ -53,7 +60,7 @@ struct Clipper::pimpl
         geo.paths.reserve(paths.size());
 
         for (auto const &path64 : paths)
-            geo.paths.push_back(to_path(path64, precision));
+            geo.paths.push_back(to_path(path64, precision, false));
 
         for (auto const &poly : polytree)
         {
@@ -68,7 +75,7 @@ struct Clipper::pimpl
                 auto *polypath = stack.back();
                 stack.pop_back();
 
-                p.areas.push_back(to_path(polypath->Polygon(), precision));
+                p.areas.push_back(to_path(polypath->Polygon(), precision, true));
 
                 p.areas.reserve(p.areas.size() + polypath->Count());
                 stack.reserve(stack.size() + polypath->Count());
@@ -146,9 +153,7 @@ Geometry buffer(Geometry const &geo, double delta)
     poly.areas.reserve(paths.size());
 
     for (auto const &p : paths)
-    {
-        poly.areas.push_back(to_path(p, precision));
-    }
+        poly.areas.push_back(to_path(p, precision, true));
 
     Geometry out;
     if (!poly.areas.empty())

@@ -33,7 +33,7 @@ impl Bbox for Polygon {
 impl<P: Into<Path>> From<P> for Polygon {
     fn from(p: P) -> Self {
         Self {
-            areas: vec![p.into()],
+            areas: vec![p.into().closed()],
         }
     }
 }
@@ -41,7 +41,7 @@ impl<P: Into<Path>> From<P> for Polygon {
 impl<P: Into<Path>> FromIterator<P> for Polygon {
     fn from_iter<T: IntoIterator<Item = P>>(iter: T) -> Self {
         Polygon {
-            areas: iter.into_iter().map(Into::into).collect(),
+            areas: iter.into_iter().map(|p| p.into().closed()).collect(),
         }
     }
 }
