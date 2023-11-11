@@ -12,16 +12,13 @@ pub trait Chaikin {
 
 impl Chaikin for Path {
     fn chaikin(&self, ratio: f64) -> Self {
-        chaikin_impl(self, ratio, false)
+        chaikin_impl(self, ratio)
     }
 }
 
 impl Chaikin for Polygon {
     fn chaikin(&self, ratio: f64) -> Self {
-        self.areas
-            .iter()
-            .map(|p| chaikin_impl(p, ratio, true))
-            .collect()
+        self.areas.iter().map(|p| chaikin_impl(p, ratio)).collect()
     }
 }
 
@@ -36,10 +33,12 @@ impl Chaikin for Geometry {
     }
 }
 
-fn chaikin_impl(path: &Path, ratio: f64, closed: bool) -> Path {
+fn chaikin_impl(path: &Path, ratio: f64) -> Path {
     if path.len() <= 2 {
         return path.clone();
     }
+
+    let closed = path.is_closed();
 
     let ratio = if ratio <= 0.5 { ratio } else { 1.0 - ratio };
 
