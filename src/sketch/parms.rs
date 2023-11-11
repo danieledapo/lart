@@ -122,6 +122,8 @@ impl Iterator for CliTokens {
         if let Some(i) = option.find('=') {
             self.value = option.split_off(i);
             self.value.remove(0);
+        } else {
+            self.value.clear();
         }
 
         Some(option)
@@ -192,7 +194,19 @@ impl CliArg for bool {
 
 impl CliArg for String {
     fn parse_args(&mut self, args: &mut CliTokens) {
-        *self = args.parsed_next();
+        let p = args.parsed_next::<String>();
+
+        let p = match p.strip_prefix('"') {
+            Some(p) => p,
+            _ => &p,
+        };
+
+        let p = match p.strip_suffix('"') {
+            Some(p) => p,
+            _ => p,
+        };
+
+        *self = p.to_string();
     }
 
     fn schema(&self) -> Schema {
