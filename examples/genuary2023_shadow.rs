@@ -1,6 +1,7 @@
 use lart::*;
 
 sketch_parms! {
+    page: Page = Page::A4,
     sides: u16 = 4,
     vor: bool = false,
     vor_points: u16 = 200,
@@ -8,7 +9,7 @@ sketch_parms! {
 
 fn main() {
     let parms = Parms::from_cli();
-    let mut doc = Sketch::new("shadow").with_page(Page::A4);
+    let mut doc = Sketch::new("shadow").with_page(parms.page);
 
     let bbox = doc.page_bbox().padded(-20.0);
     let r = bbox.width().min(bbox.height()) / 2.0;
