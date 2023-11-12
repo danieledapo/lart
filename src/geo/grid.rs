@@ -67,7 +67,7 @@ impl<T> Grid<T> {
     }
 
     pub fn up(&self, x: usize, y: usize) -> Option<(usize, usize)> {
-        (y > 0 && self.height > 0 && x < self.width).then_some((x, y - 1))
+        (y > 0 && self.height > 0 && x < self.width).then(|| (x, y - 1))
     }
 
     pub fn down(&self, x: usize, y: usize) -> Option<(usize, usize)> {
@@ -75,7 +75,7 @@ impl<T> Grid<T> {
     }
 
     pub fn left(&self, x: usize, y: usize) -> Option<(usize, usize)> {
-        (x > 0 && self.width > 0 && y < self.height).then_some((x - 1, y))
+        (x > 0 && self.width > 0 && y < self.height).then(|| (x - 1, y))
     }
 
     pub fn right(&self, x: usize, y: usize) -> Option<(usize, usize)> {
