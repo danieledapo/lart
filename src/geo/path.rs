@@ -120,6 +120,24 @@ impl Path {
     pub fn dedup(&mut self) {
         self.points.dedup();
     }
+
+    pub fn area(&self) -> f64 {
+        self.sarea().abs()
+    }
+
+    fn sarea(&self) -> f64 {
+        if self.points.len() < 3 {
+            return 0.0;
+        }
+
+        let mut a = 0.0;
+        let mut p1 = *self.points.last().unwrap();
+        for p2 in self.iter() {
+            a += p1.x * p2.y - p2.x * p1.y;
+            p1 = p2;
+        }
+        a * 0.5
+    }
 }
 
 impl Bbox for Path {
