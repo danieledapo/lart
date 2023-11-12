@@ -47,6 +47,7 @@ pub struct Layer {
     pen_width: f64, // mm
 }
 
+#[derive(Clone, Debug, PartialEq)]
 pub struct Page(pub f64, pub f64);
 
 #[macro_export]

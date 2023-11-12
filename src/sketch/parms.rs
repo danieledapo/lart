@@ -1,5 +1,7 @@
 use std::{env::Args, fmt, iter::Skip, mem, ops::RangeInclusive, str::FromStr};
 
+use crate::Page;
+
 pub trait CliArg {
     // An error is a panic when parsing
     fn parse_args(&mut self, args: &mut CliTokens);
@@ -260,6 +262,34 @@ impl CliArg for Choice {
 
     fn schema(&self) -> Schema {
         Schema::Choice(self.clone())
+    }
+}
+
+impl CliArg for Page {
+    fn parse_args(&mut self, args: &mut CliTokens) {
+        let mut p = String::new();
+        p.parse_args(args);
+
+        *self = [
+            ("A0", Page::A0),
+            ("A1", Page::A1),
+            ("A2", Page::A2),
+            ("A3", Page::A3),
+            ("A4", Page::A4),
+            ("A5", Page::A5),
+            ("A6", Page::A6),
+        ]
+        .into_iter()
+        .find(|(s, _)| s == &p)
+        .expect("invalid page")
+        .1;
+    }
+
+    fn schema(&self) -> Schema {
+        Schema::Choice(Choice::new(
+            "A4",
+            &["A6", "A5", "A4", "A3", "A2", "A1", "A0"],
+        ))
     }
 }
 
