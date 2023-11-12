@@ -1,5 +1,5 @@
-// TODO: this should be implemented for Polygon and Geometry too, but it's not
-// trivial because of holes and of concave shapes
+// TODO: this should be implemented for Geometry too, but it's not trivial
+// because of holes and of concave shapes
 
 use crate::{seg_x_line, Path, V};
 

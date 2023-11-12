@@ -16,7 +16,7 @@ fn main() {
         poly.push(V::in_rect(&mut doc, &bbox));
     }
 
-    let mut poly = Geometry::from(Polygon::from(poly));
+    let mut poly = Geometry::from(poly.closed());
 
     for _ in 0..parms.reflections {
         let a0 = doc.gen_range(0.0..=PI);

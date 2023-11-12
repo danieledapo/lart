@@ -43,14 +43,14 @@ pub fn main() {
             p.push(v(0, 0));
             p.extend(texline.iter());
 
-            Polygon::from(p)
+            Geometry::from(p)
         } else {
             let aa = f64::max(0.0, a + doc.gen_range(0.0..=da));
 
             let mut p = arc(aa, rr);
             p.reverse();
             p.extend(texline.iter());
-            Polygon::from(p)
+            Geometry::from(p)
         };
 
         let mut texture = Geometry::new();

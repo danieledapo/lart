@@ -16,7 +16,7 @@ fn main() {
 
     let n = doc.gen_range(3..=parms.sides);
 
-    let mut poly = Polygon::from(polar_angles(n).map(|a| bbox.center() + V::polar(a, r)));
+    let mut poly = Geometry::from(Path::circle(bbox.center(), r, n));
     poly *= Xform::rot(doc.gen_range(0.0..=PI));
     poly *= Xform::rect_to_rect(&poly.bbox().unwrap(), &bbox.padded(-20.0));
 
@@ -75,7 +75,7 @@ fn main() {
     doc.geometry(&tex_below & &below);
     doc.geometry(above);
     doc.geometry(below);
-    doc.geometry(Polygon::from(bbox));
+    doc.geometry(bbox);
     doc.geometry(path!(p0, p1,));
 
     // doc.fit_to_page(20.0);

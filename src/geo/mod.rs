@@ -3,7 +3,6 @@ pub mod geometry;
 pub mod grid;
 pub mod line;
 pub mod path;
-pub mod polygon;
 pub mod rect;
 pub(crate) mod types;
 pub mod utils;
@@ -26,7 +25,7 @@ pub fn v(x: impl Into<f64>, y: impl Into<f64>) -> V {
 
 #[macro_export]
 macro_rules! polygon {
-    ($($d: tt)*) => { $crate::_build_path_like!($crate::geo::Polygon, $($d)*) };
+    ($($d: tt)*) => { $crate::path!($($d)*).closed() };
 }
 
 #[macro_export]

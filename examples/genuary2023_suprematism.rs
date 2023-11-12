@@ -4,7 +4,7 @@ pub fn main() {
     let mut doc = Sketch::new("suprematism").with_page(Page::A4);
     let (w, h) = doc.dimensions();
 
-    let mut g = Geometry::from(Polygon::from(Rect::with_dimensions(v(0, 0), w, h)));
+    let mut g = Geometry::from(Rect::with_dimensions(v(0, 0), w, h));
 
     let t0 = doc.gen_range(0.1..=0.9);
     g = g - Geometry::from(Path::from([

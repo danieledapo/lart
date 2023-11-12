@@ -1,4 +1,4 @@
-use crate::{Geometry, Polygon, Rect, V};
+use crate::{polygon, Geometry, Path, Rect, V};
 
 /// Find a [triangulation][0] of the given set of points.
 ///
@@ -15,15 +15,15 @@ pub fn triangulate(pts: &[V]) -> Geometry {
         .triangles
         .chunks_exact(3)
         .map(|vs| {
-            Polygon::from([
+            polygon!(
                 (pts[vs[0]].x, pts[vs[0]].y),
                 (pts[vs[1]].x, pts[vs[1]].y),
                 (pts[vs[2]].x, pts[vs[2]].y),
-            ])
+            )
         })
         .collect();
 
-    Geometry::from_polygons(polys)
+    Geometry::from_paths(polys)
 }
 
 /// Generate the [Voronoi diagram][0] for the given set of points clipping it to
@@ -50,9 +50,9 @@ pub fn voronoi(pts: &[V], clip: &Rect) -> Geometry {
         ))
         .build()
         .map_or_else(Geometry::new, |vor| {
-            Geometry::from_polygons(
+            Geometry::from_paths(
                 vor.iter_cells()
-                    .map(|p| Polygon::from(p.iter_vertices().map(|p| V::new(p.x, p.y))))
+                    .map(|p| Path::from(p.iter_vertices().map(|p| V::new(p.x, p.y))).closed())
                     .collect::<Vec<_>>(),
             )
         })

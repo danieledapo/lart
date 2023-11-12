@@ -27,7 +27,7 @@ pub fn main() {
 
     let mut sp = Geometry::new();
     for &(c, r) in cp.circles() {
-        sp.push_polygon(Polygon::circle(c, r, 100));
+        sp.push_path(Path::circle(c, r, 100));
     }
 
     let mut tex = Geometry::new();

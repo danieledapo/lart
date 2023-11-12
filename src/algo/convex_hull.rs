@@ -1,12 +1,12 @@
-use crate::{F64Key, Polygon, V};
+use crate::{F64Key, Path, V};
 
 /// An implementation of the [Gift Wrapping Algorithm][0] to return the Convex
 /// Hull of a set of points.
 ///
 /// [0]: https://en.wikipedia.org/wiki/Gift_wrapping_algorithm
-pub fn convex_hull(points: &[V]) -> Polygon {
+pub fn convex_hull(points: &[V]) -> Path {
     if points.len() <= 3 {
-        return Polygon::from(points.iter().cloned());
+        return Path::from(points.iter().cloned()).closed();
     }
 
     let mut hull = vec![];
@@ -33,5 +33,5 @@ pub fn convex_hull(points: &[V]) -> Polygon {
         on_hull = endpoint;
     }
 
-    Polygon::from(hull)
+    Path::from(hull).closed()
 }

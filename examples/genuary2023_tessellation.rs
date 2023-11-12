@@ -26,7 +26,7 @@ pub fn main() {
                 let mut g = Geometry::new();
                 for r in r.subdivide(grid_divs, grid_divs) {
                     if doc.gen_bool(0.5) {
-                        g = g | Geometry::from(Polygon::from(r));
+                        g = g | Geometry::from(r);
                     }
                 }
                 blueprints.push(g);
@@ -50,7 +50,7 @@ pub fn main() {
     // for x in frange(0.0, 300.0, 1.0) {
     //     t.push_path(Path::from([v(0, x), v(210, x)]));
     // }
-    // doc.geometry(t & (Geometry::from(Polygon::from(doc.page_bbox())) - &a));
+    // doc.geometry(t & (Geometry::from(doc.page_bbox()) - &a));
 
     doc.geometry(a);
 

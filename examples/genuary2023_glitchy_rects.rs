@@ -35,7 +35,7 @@ fn main() {
         );
 
         if parms.debug {
-            doc.geometry(Polygon::from(r));
+            doc.geometry(r);
             continue;
         }
 

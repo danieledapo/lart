@@ -1,4 +1,4 @@
-use crate::{Geometry, Path, Polygon, V};
+use crate::{Geometry, Path, V};
 
 pub trait Simplify {
     /// Simplify a given geometry with the given eps using the
@@ -16,18 +16,6 @@ impl Simplify for Path {
         let mut out = Path::with_capacity(self.len());
         rdp(&mut out, self.points(), eps);
         out
-    }
-}
-
-impl Simplify for Polygon {
-    fn simplify(&self, eps: f64) -> Self {
-        self.areas
-            .iter()
-            .filter_map(|p| {
-                let p = p.simplify(eps);
-                (!p.is_empty()).then_some(p)
-            })
-            .collect()
     }
 }
 

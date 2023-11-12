@@ -105,7 +105,7 @@ fn main() {
         let hex = hexagon(c);
 
         // boundary
-        doc.geometry(Polygon::from(hex.clone()));
+        doc.geometry(hex.clone().closed());
 
         {
             // internal decoration
@@ -159,11 +159,11 @@ fn main() {
                     let start = c + d;
 
                     doc.layer(2);
-                    doc.geometry(Polygon::from([
+                    doc.geometry(polygon!(
                         start,
                         start + V::polar(a + da, 0.4),
                         start + V::polar(a - da, 0.4),
-                    ]));
+                    ));
                     doc.layer(1);
                 }
             }

@@ -28,11 +28,11 @@ pub fn main() {
     let mut g1 = Geometry::new();
     let mut g2 = Geometry::new();
     for &(c, r) in cp.circles() {
-        let cc = Polygon::from(polar_angles(60).map(|a| V::polar(a, r) + c));
+        let cc = Path::circle(c, r, 60);
         if doc.gen_bool(0.5) {
-            g1.push_polygon(cc);
+            g1.push_path(cc);
         } else {
-            g2.push_polygon(cc);
+            g2.push_path(cc);
         }
     }
 

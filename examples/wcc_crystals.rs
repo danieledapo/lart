@@ -24,7 +24,7 @@ sketch_parms! {
 
 fn crystal(doc: &mut Sketch, parms: &Parms, texture_spacing: f64) -> (Geometry, Geometry) {
     let mut horzs: Vec<Path> = vec![];
-    let mut top = Polygon::new();
+    let mut top = Path::new();
 
     for y in 0..parms.ydivs {
         let yt = mapu(y, 0, parms.ydivs - 1);
@@ -45,25 +45,25 @@ fn crystal(doc: &mut Sketch, parms: &Parms, texture_spacing: f64) -> (Geometry, 
         let visible = usize::from(parms.n) / 2;
         horzs.push(ngon.slice(0..=visible));
         if y == parms.ydivs - 1 {
-            top = Polygon::from(ngon);
+            top = ngon.closed();
         }
     }
 
     let mut cry = Geometry::new();
-    cry.push_polygon(top);
+    cry.push_path(top);
 
     let mut texture = Geometry::new();
 
     for r in 0..horzs.len().saturating_sub(1) {
         let n = horzs[0].len();
         for c in 0..n.saturating_sub(1) {
-            let quad = Polygon::from([
+            let quad = polygon!(
                 horzs[r][c],
                 horzs[r + 1][c],
                 horzs[r + 1][c + 1],
                 horzs[r][c + 1],
-            ]);
-            cry.push_polygon(quad.clone());
+            );
+            cry.push_path(quad.clone());
 
             if c == n - 2 {
                 let bbox = quad.bbox().unwrap();
@@ -74,7 +74,7 @@ fn crystal(doc: &mut Sketch, parms: &Parms, texture_spacing: f64) -> (Geometry, 
                         v(x + bbox.width(), bbox.bottom()),
                     ]))
                 }
-                lines = lines & quad;
+                lines = lines & Geometry::from(quad);
                 texture.extend(&lines);
             }
         }

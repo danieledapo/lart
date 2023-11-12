@@ -1,6 +1,6 @@
 use std::ops::{Index, IndexMut, RangeBounds};
 
-use crate::{bbox_union, path, v, Bbox, Path, Rect, V};
+use crate::{bbox_union, path, polar_angles, v, Bbox, Path, Rect, V};
 
 impl Path {
     pub const fn new() -> Self {
@@ -11,6 +11,14 @@ impl Path {
         Self {
             points: Vec::with_capacity(cap),
         }
+    }
+
+    /// Return the `n` angles diving the circle in `n` arcs.
+    pub fn circle(c: V, r: f64, steps: u16) -> Self {
+        polar_angles(steps)
+            .map(|a| c + V::polar(a, r))
+            .collect::<Self>()
+            .closed()
     }
 
     pub fn push(&mut self, a: impl Into<V>) {

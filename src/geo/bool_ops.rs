@@ -1,6 +1,6 @@
 use crate::{
     ffi::{self, new_clipper},
-    Geometry, Polygon,
+    Geometry,
 };
 
 impl Geometry {
@@ -29,47 +29,15 @@ macro_rules! bool_op_body {
 
         clipper.pin_mut().$op()
     }};
-
-    (Geometry, Polygon, $lhs: ident, $rhs: ident, $op: ident) => {{
-        let mut clipper = new_clipper();
-
-        for path in &$lhs.paths {
-            clipper.pin_mut().add_subject(path);
-        }
-
-        clipper.pin_mut().add_clip($rhs.boundary());
-
-        clipper.pin_mut().$op()
-    }};
-
-    (Polygon, Geometry, $lhs: ident, $rhs: ident, $op: ident) => {{
-        let mut clipper = new_clipper();
-
-        clipper.pin_mut().add_subject($lhs.boundary());
-
-        for poly in &$rhs.paths {
-            clipper.pin_mut().add_clip(poly);
-        }
-
-        clipper.pin_mut().$op()
-    }};
-
-    (Polygon, Polygon, $lhs: ident, $rhs: ident, $op: ident) => {{
-        let mut clipper = new_clipper();
-
-        clipper.pin_mut().add_subject($lhs.boundary());
-        clipper.pin_mut().add_clip($rhs.boundary());
-
-        clipper.pin_mut().$op()
-    }};
 }
 
 macro_rules! bool_op {
     ($tr: ident, $fun_name: ident, $op: ident) => {
         bool_op!(Geometry, Geometry, $tr, $fun_name, $op);
-        bool_op!(Geometry, Polygon, $tr, $fun_name, $op);
-        bool_op!(Polygon, Geometry, $tr, $fun_name, $op);
-        bool_op!(Polygon, Polygon, $tr, $fun_name, $op);
+        // bool_op!(Path, Geometry, $tr, $fun_name, $op);
+
+        // bool_op!(Geometry, Path, $tr, $fun_name, $op);
+        // bool_op!(Path, Path, $tr, $fun_name, $op);
     };
 
     ($t: ident, $arg: ident, $tr: ident, $fun_name: ident, $op: ident) => {

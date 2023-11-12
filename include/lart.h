@@ -4,7 +4,6 @@
 
 struct V;
 struct Path;
-struct Polygon;
 struct Geometry;
 
 class Clipper

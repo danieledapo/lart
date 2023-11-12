@@ -1,6 +1,6 @@
 use std::ops::{Mul, MulAssign};
 
-use crate::{v, Geometry, Path, Polygon, Rect, V};
+use crate::{v, Geometry, Path, Rect, V};
 
 #[derive(Debug, Clone)]
 pub struct Xform {
@@ -86,14 +86,6 @@ impl<'a> MulAssign<&'a Xform> for Path {
     }
 }
 
-impl<'a> MulAssign<&'a Xform> for Polygon {
-    fn mul_assign(&mut self, rhs: &'a Xform) {
-        for a in &mut self.areas {
-            *a *= rhs;
-        }
-    }
-}
-
 impl<'a> MulAssign<&'a Xform> for Geometry {
     fn mul_assign(&mut self, rhs: &'a Xform) {
         for p in &mut self.paths {
@@ -132,5 +124,4 @@ macro_rules! impl_trivial_xform_helpers {
 impl_trivial_xform_helpers!(Xform);
 impl_trivial_xform_helpers!(V);
 impl_trivial_xform_helpers!(Path);
-impl_trivial_xform_helpers!(Polygon);
 impl_trivial_xform_helpers!(Geometry);

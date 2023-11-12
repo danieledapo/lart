@@ -1,4 +1,4 @@
-use crate::{Geometry, Path, Polygon};
+use crate::{Geometry, Path};
 
 pub trait Chaikin {
     /// Smooth a geometry using the [Chaikin algorithm][0] using the given ratio
@@ -13,12 +13,6 @@ pub trait Chaikin {
 impl Chaikin for Path {
     fn chaikin(&self, ratio: f64) -> Self {
         chaikin_impl(self, ratio)
-    }
-}
-
-impl Chaikin for Polygon {
-    fn chaikin(&self, ratio: f64) -> Self {
-        self.areas.iter().map(|p| chaikin_impl(p, ratio)).collect()
     }
 }
 

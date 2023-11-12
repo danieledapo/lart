@@ -11,11 +11,6 @@ pub mod ffi {
         points: Vec<V>,
     }
 
-    #[derive(Debug, Clone, PartialEq)]
-    pub struct Polygon {
-        areas: Vec<Path>,
-    }
-
     #[derive(Debug, Clone)]
     pub struct Geometry {
         paths: Vec<Path>,
