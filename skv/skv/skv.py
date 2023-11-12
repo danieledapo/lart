@@ -173,7 +173,7 @@ class Skv(QMainWindow):
             elif ty == "bool":
                 w = QCheckBox(self)
                 w.setChecked(value)
-                w.valueChanged.connect(edit_over(param, lambda t: t != 0))
+                w.stateChanged.connect(edit_over(param, lambda t: t != 0))
             elif ty == "choice":
                 w = QComboBox(self)
                 w.addItems(schema["choices"])
