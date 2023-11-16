@@ -29,7 +29,7 @@ impl Geometry {
         &self.paths
     }
 
-    pub fn extend(&mut self, o: &Self) {
+    pub fn append(&mut self, o: &Self) {
         self.paths.extend_from_slice(&o.paths);
     }
 }

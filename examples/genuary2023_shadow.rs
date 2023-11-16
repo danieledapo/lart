@@ -67,8 +67,8 @@ fn main() {
             let step = doc.gen_range(2..=10) as f64 / 2.0;
 
             let tex = parallel_hatch(&g, a, step);
-            tex_above.extend(&tex);
-            tex_below.extend(&tex);
+            tex_above.append(&tex);
+            tex_below.append(&tex);
         }
     }
 

@@ -120,7 +120,7 @@ impl Sketch {
 
     pub fn geometry(&mut self, g: impl Into<Geometry>) {
         let g = g.into();
-        self.layer(self.layer_id).geo.extend(&g);
+        self.layer(self.layer_id).geo.append(&g);
     }
 
     pub fn layer(&mut self, lid: i32) -> &mut Layer {

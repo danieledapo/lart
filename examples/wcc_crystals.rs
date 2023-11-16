@@ -75,7 +75,7 @@ fn crystal(doc: &mut Sketch, parms: &Parms, texture_spacing: f64) -> (Geometry, 
                     ]))
                 }
                 lines = lines & Geometry::from(quad);
-                texture.extend(&lines);
+                texture.append(&lines);
             }
         }
     }
@@ -118,7 +118,7 @@ fn main() {
 
         for p in cry.paths() {
             let p = Geometry::from(p.clone()) & (&boundary);
-            geos.extend(&p);
+            geos.append(&p);
             doc.geometry(p);
         }
 

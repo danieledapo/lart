@@ -33,12 +33,12 @@ pub fn main() {
 
             geo.push_path([v(0, y), v(dx, y + dy)].into());
         }
-        geo.extend(&(geo.clone() * Xform::scale(v(-1, 1))));
+        geo.append(&(geo.clone() * Xform::scale(v(-1, 1))));
         geo.push_path(Path::from([v(0, 0), v(0, 100)]));
 
         let mut snowflake = Geometry::new();
         for a in 0..parms.symmetry {
-            snowflake.extend(&(geo.clone() * Xform::rot(map(a, 0, parms.symmetry, 0, TAU))));
+            snowflake.append(&(geo.clone() * Xform::rot(map(a, 0, parms.symmetry, 0, TAU))));
         }
 
         snowflake = snowflake.buffer(parms.buff.into());
