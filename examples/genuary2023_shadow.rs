@@ -13,7 +13,7 @@ fn main() {
 
     let bbox = doc.page_bbox().padded(-20.0);
     let r = bbox.width().min(bbox.height()) / 2.0;
-    let bbox = rect!(bbox.center() - r, bbox.center() + r);
+    let bbox = bbox!(bbox.center() - r, bbox.center() + r);
 
     let n = doc.gen_range(3..=parms.sides);
 

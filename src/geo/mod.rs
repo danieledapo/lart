@@ -34,7 +34,7 @@ macro_rules! path {
 }
 
 #[macro_export]
-macro_rules! rect {
+macro_rules! bbox {
     ($v0: expr, $($vv: expr ,)*) => {{
         $crate::rect!($v0 $(, $vv)*)
     }};

@@ -19,7 +19,7 @@ fn main() {
         .with_page(Page::A4)
         .with_page(Page(210.0, 270.0));
 
-    let font_bbox = rect!(v(0, 0), v(parms.gridw, parms.gridh));
+    let font_bbox = bbox!(v(0, 0), v(parms.gridw, parms.gridh));
 
     for r in doc
         .page_bbox()
