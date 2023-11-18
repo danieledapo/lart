@@ -2,18 +2,18 @@ use lart::{split::split_convex_polygon, *};
 
 sketch_parms! {
     splits: u16 = 2,
-    shape: Choice = Choice::new("square", &["square", "circle"]),
+    shape: Choice = Choice::new("rect", &["rect", "circle"]),
     cut_mode: u16 = 0,
 }
 
 fn main() {
     let parms = Parms::from_cli();
 
-    let mut doc = Sketch::new("split").with_page(Page::A4);
+    let mut doc = Sketch::new("split").with_page(Page::A6);
     let bbox = doc.page_bbox();
 
     let shape = match parms.shape.value() {
-        "square" => bbox.scaled(0.8).closed_path(),
+        "rect" => bbox.scaled(0.8).closed_path(),
         "circle" => Path::circle(bbox.center(), bbox.radius() * 0.8, 120),
         _ => panic!("unknown shape"),
     };
@@ -55,7 +55,7 @@ fn main() {
             }
         }
 
-        let displacement = [1.0, -1.0].choose(&mut doc).unwrap() * doc.gen_range(5.0..=30.0);
+        let displacement = [1.0, -1.0].choose(&mut doc).unwrap() * doc.gen_range(3.0..=8.0);
 
         shapes = shapes
             .into_iter()
@@ -64,24 +64,24 @@ fn main() {
                 let p = s.centroid();
                 let dd: f64 = p.orient(p0, p1).signum();
 
-                s * Xform::xlate((p1 - p0).normalized() * (displacement * dd))
+                s * Xform::xlate((p1 - p0).normalized() * displacement * dd)
             })
             .collect();
     }
 
-    let xform = Xform::rect_to_rect(&bbox_union(&shapes).unwrap(), &bbox.padded(-20.0));
+    let xform = Xform::rect_to_rect(&bbox_union(&shapes).unwrap(), &bbox.padded(-10.0));
 
     let mut to_texture = Geometry::new();
     for s in shapes {
         let s = s * &xform;
-        let g = Geometry::from(s.closed()).buffer(-doc.gen_range(1.0..=5.0));
+        let g = Geometry::from(s.closed()).buffer(-doc.gen_range(0.5..=1.5));
 
         for p in g.paths() {
             if p.area() < 10.0 {
                 continue;
             }
 
-            if doc.gen_bool(0.5) {
+            if doc.gen_bool(0.4) {
                 to_texture.push_path(p.clone());
             }
 
@@ -89,7 +89,7 @@ fn main() {
         }
     }
 
-    doc.geometry(parallel_hatch(&to_texture, -TAU / 8.0, 2.0));
+    doc.geometry(parallel_hatch(&to_texture, -TAU / 8.0, 1.0));
 
     doc.save().unwrap();
 }
