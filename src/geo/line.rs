@@ -2,6 +2,12 @@ use crate::{linterp, PRECISION, V};
 
 /// Find the intersection between two segments returning the position of the
 /// intersection, if any.
+///
+/// ```rust
+/// # use lart::*;
+/// assert!(seg_x_seg((v(0,10), v(0,-10)), (v(5,0), v(10,0))).is_none());
+/// assert_eq!(seg_x_seg((v(0,10), v(0,-10)), (v(-10,0), v(10,0))), Some(v(0,0)));
+/// ```
 pub fn seg_x_seg(seg1: (V, V), seg2: (V, V)) -> Option<V> {
     let t = seg_x_line_t(seg1, seg2)?;
     seg_x_line_t(seg2, seg1)?;
@@ -10,6 +16,12 @@ pub fn seg_x_seg(seg1: (V, V), seg2: (V, V)) -> Option<V> {
 
 /// Find the intersection between two segments returning the parameter along the
 /// first segment of the intersection, if any.
+///
+/// ```rust
+/// # use lart::*;
+/// assert!(seg_x_seg_t((v(0,10), v(0,-10)), (v(5,0), v(10,0))).is_none());
+/// assert_eq!(seg_x_seg_t((v(0,10), v(0,-10)), (v(-10,0), v(10,0))), Some(0.5));
+/// ```
 pub fn seg_x_seg_t(seg1: (V, V), seg2: (V, V)) -> Option<f64> {
     let t = seg_x_line_t(seg1, seg2)?;
     seg_x_line_t(seg2, seg1)?;
@@ -18,6 +30,12 @@ pub fn seg_x_seg_t(seg1: (V, V), seg2: (V, V)) -> Option<f64> {
 
 /// Find the intersection between a segment and an infinite line passing through
 /// two points returning the position of the intersection, if any.
+///
+/// ```rust
+/// # use lart::*;
+/// assert_eq!(seg_x_line((v(0,10), v(0,-10)), (v(5,0), v(10,0))), Some(v(0,0)));
+/// assert!(seg_x_line((v(0,10), v(0,9)), (v(5,0), v(10,0))).is_none());
+/// ```
 pub fn seg_x_line(seg: (V, V), l: (V, V)) -> Option<V> {
     seg_x_line_t(seg, l).map(|t| linterp(seg.0, seg.1, t))
 }
@@ -25,6 +43,12 @@ pub fn seg_x_line(seg: (V, V), l: (V, V)) -> Option<V> {
 /// Find the intersection between a segment and an infinite line passing through
 /// two points returning the parameter along the first segment of the
 /// intersection, if any.
+///
+/// ```rust
+/// # use lart::*;
+/// assert_eq!(seg_x_line_t((v(0,10), v(0,-10)), (v(5,0), v(10,0))), Some(0.5));
+/// assert!(seg_x_line_t((v(0,10), v(0,9)), (v(5,0), v(10,0))).is_none());
+/// ```
 pub fn seg_x_line_t(seg: (V, V), l: (V, V)) -> Option<f64> {
     let mut t = line_x_line_t(seg, l)?;
     if (-PRECISION..0.0).contains(&t) {
@@ -37,12 +61,24 @@ pub fn seg_x_line_t(seg: (V, V), l: (V, V)) -> Option<f64> {
 
 /// Find the intersection between two infinite lines passing through two points
 /// returning the position of the intersection, if any.
+///
+/// ```rust
+/// # use lart::*;
+/// assert_eq!(line_x_line((v(0,10), v(0,-10)), (v(5,0), v(10,0))), Some(v(0,0)));
+/// assert_eq!(line_x_line((v(5,0), v(10,0)), (v(0,10), v(0,-10))), Some(v(0,0)));
+/// ```
 pub fn line_x_line(l1: (V, V), l2: (V, V)) -> Option<V> {
     line_x_line_t(l1, l2).map(|t| linterp(l1.0, l1.1, t))
 }
 
 /// Find the intersection between two infinite lines passing through two points
 /// returning the parameter along the first line, if any.
+///
+/// ```rust
+/// # use lart::*;
+/// assert_eq!(line_x_line_t((v(0,10), v(0,-10)), (v(5,0), v(10,0))), Some(0.5));
+/// assert_eq!(line_x_line_t((v(5,0), v(10,0)), (v(0,10), v(0,-10))), Some(-1.0));
+/// ```
 pub fn line_x_line_t((a, b): (V, V), (c, d): (V, V)) -> Option<f64> {
     let det = (a.x - b.x) * (c.y - d.y) - (a.y - b.y) * (c.x - d.x);
     if det.abs() < PRECISION {

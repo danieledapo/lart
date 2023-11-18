@@ -4,6 +4,10 @@ use crate::{
 };
 
 impl Geometry {
+    /// Offset the geometry by the given amount.
+    ///
+    /// If the delta is negative then the geometry is actually eroded by that
+    /// amount.
     pub fn buffer(&self, delta: f64) -> Self {
         if delta != 0.0 {
             ffi::buffer(self, delta)
