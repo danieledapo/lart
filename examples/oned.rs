@@ -36,6 +36,13 @@ fn main() {
                 [1.0, -1.0].choose(&mut doc).unwrap() * doc.gen_range(0.3..=0.5) * bbox.width(),
             )));
 
+    let xform = Xform::rect_to_rect(
+        &bbox_union(&[back_face.bbox().unwrap(), front_face.bbox().unwrap()]).unwrap(),
+        &bbox.padded(-20.0),
+    );
+    let front_face = front_face * &xform;
+    let back_face = back_face * &xform;
+
     let mut side_faces = vec![];
     for ((s0, e0), (s1, e1)) in front_face.segments().zip(back_face.segments()) {
         side_faces.push(polygon!(s0, e0, e1, s1));
@@ -93,10 +100,5 @@ fn main() {
         doc.geometry(f);
     }
 
-    if parms.regular_polygon {
-        doc.autocenter();
-    } else {
-        doc.fit_to_page(20.0);
-    }
     doc.save().unwrap();
 }

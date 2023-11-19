@@ -5,13 +5,14 @@ sketch_parms! {
     sides: u16 = 4,
     vor: bool = false,
     vor_points: u16 = 200,
+    padding: f64 = 20.0,
 }
 
 fn main() {
     let parms = Parms::from_cli();
     let mut doc = Sketch::new("shadow").with_page(parms.page);
 
-    let bbox = doc.page_bbox().padded(-20.0);
+    let bbox = doc.page_bbox().padded(-parms.padding);
     let r = bbox.width().min(bbox.height()) / 2.0;
     let bbox = bbox!(bbox.center() - r, bbox.center() + r);
 
