@@ -4,7 +4,7 @@ setup(
     name="skv",
     version="0.1",
     description="Sketch viewer",
-    url="http://github.com/d-dorazio/lart",
+    url="http://github.com/danieledapo/lart",
     author="Daniele D'Orazio",
     author_email="d.dorazio96@gmail.com",
     license="MIT",
