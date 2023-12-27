@@ -3,6 +3,7 @@ pub mod geometry;
 pub mod grid;
 pub mod line;
 pub mod path;
+pub mod quadtree;
 pub mod rect;
 pub(crate) mod types;
 pub mod utils;
@@ -11,6 +12,7 @@ pub mod xform;
 
 pub use grid::Grid;
 pub use line::*;
+pub use quadtree::{QuadTree, QuadTreeElem};
 pub use rect::*;
 pub use types::*;
 pub use utils::*;
