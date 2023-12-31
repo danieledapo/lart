@@ -13,7 +13,10 @@ use std::ops::{Add, Mul, Sub};
 /// ```
 pub fn frange(start: f64, end: f64, step: f64) -> FRange {
     debug_assert!(step != 0.0);
-    debug_assert!((end - start).signum() == step.signum());
+    debug_assert!(
+        (end - start).signum() == step.signum(),
+        "start={start} end={end} step={step}"
+    );
 
     FRange { start, end, step }
 }

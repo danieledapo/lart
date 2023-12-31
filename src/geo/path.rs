@@ -1,6 +1,6 @@
 use std::ops::{Index, IndexMut, RangeBounds};
 
-use crate::{bbox_union, path, polar_angles, v, Bbox, Path, Rect, V};
+use crate::{bbox_union, path, polar_angles, sample_seg, v, Bbox, Path, Rect, V};
 
 impl Path {
     pub const fn new() -> Self {
@@ -119,6 +119,13 @@ impl Path {
 
     pub fn dedup(&mut self) {
         self.points.dedup();
+    }
+
+    pub fn sampled(&self, max_dist: f64) -> Self {
+        Self::from_iter(
+            self.segments()
+                .flat_map(|(a, b)| sample_seg(a, b, max_dist, false).map(|s| s.point)),
+        )
     }
 
     pub fn area(&self) -> f64 {
