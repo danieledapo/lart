@@ -2,9 +2,11 @@ use std::ops::{Add, Mul, Sub};
 
 mod fkey;
 mod frange;
+mod line;
 
 pub use fkey::*;
 pub use frange::*;
+pub use line::*;
 
 /// Linearly interpolate between the two given numbers or points with the given
 /// t parameter.

@@ -1,7 +1,6 @@
 pub mod bool_ops;
 pub mod containers;
 pub mod geometry;
-pub mod line;
 pub mod path;
 pub mod rect;
 pub(crate) mod types;
@@ -10,7 +9,6 @@ pub mod v;
 pub mod xform;
 
 pub use containers::*;
-pub use line::*;
 pub use rect::*;
 pub use types::*;
 pub use utils::*;
