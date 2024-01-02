@@ -162,8 +162,8 @@ impl Rect {
     }
 }
 
-pub fn bbox_union<'a, B: Bbox + 'a>(v: impl IntoIterator<Item = &'a B>) -> Option<Rect> {
-    let mut vs = v.into_iter().flat_map(Bbox::bbox);
+pub fn bbox_union<B: Bbox>(v: impl IntoIterator<Item = B>) -> Option<Rect> {
+    let mut vs = v.into_iter().flat_map(|e| e.bbox());
     let mut bbox = vs.next()?;
     for b in vs {
         bbox.union(&b);
@@ -174,5 +174,11 @@ pub fn bbox_union<'a, B: Bbox + 'a>(v: impl IntoIterator<Item = &'a B>) -> Optio
 impl Bbox for Rect {
     fn bbox(&self) -> Option<Rect> {
         Some(self.clone())
+    }
+}
+
+impl<B: Bbox> Bbox for &B {
+    fn bbox(&self) -> Option<Rect> {
+        (*self).bbox()
     }
 }
