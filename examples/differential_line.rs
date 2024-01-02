@@ -35,7 +35,10 @@ fn main() {
         let mut packer = CirclePacker::new(doc.page_bbox());
         packer.min_radius = 10.0;
         packer.max_radius = doc.page_bbox().width().min(doc.page_bbox().height()) * 0.45;
-        while packer.circles().len() < parms.seeds {
+        for _ in 0..100_000 {
+            if packer.circles().len() >= parms.seeds {
+                break;
+            }
             packer.generate(&mut doc);
         }
 
