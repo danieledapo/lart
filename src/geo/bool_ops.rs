@@ -15,6 +15,17 @@ impl Geometry {
             self.clone()
         }
     }
+
+    /// Merge all the paths of this geometry together.
+    pub fn union_all(&self) -> Self {
+        let mut clipper = new_clipper();
+
+        for p in &self.paths {
+            clipper.pin_mut().add_subject(p);
+        }
+
+        clipper.pin_mut().union_()
+    }
 }
 
 // probably not the best way to do all of this way (at least I hope so), but
