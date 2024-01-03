@@ -34,6 +34,7 @@ static Clipper2Lib::Path64 to_path64(Path const &path, double precision)
 struct Clipper::pimpl
 {
     Clipper2Lib::Clipper64 clipper;
+    Clipper2Lib::FillRule fill_rule = Clipper2Lib::FillRule::NonZero;
     double precision = 1000;
 
     Geometry execute(Clipper2Lib::ClipType ct)
@@ -41,7 +42,7 @@ struct Clipper::pimpl
         Clipper2Lib::PolyTree64 polytree;
         Clipper2Lib::Paths64 paths;
 
-        bool ok = clipper.Execute(ct, Clipper2Lib::FillRule::EvenOdd, polytree, paths);
+        bool ok = clipper.Execute(ct, fill_rule, polytree, paths);
         if (!ok)
             return Geometry{};
 
