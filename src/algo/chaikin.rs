@@ -25,7 +25,7 @@ impl Chaikin for Geometry {
 }
 
 fn chaikin_impl(path: &Path, ratio: f64) -> Path {
-    if path.len() <= 2 {
+    if path.len() <= 2 || ratio == 0.0 || ratio == 1.0 {
         return path.clone();
     }
 
@@ -44,9 +44,16 @@ fn chaikin_impl(path: &Path, ratio: f64) -> Path {
     }
 
     for (s, e) in path.segments() {
+        if e == s {
+            new.push(s);
+            continue;
+        }
+
         let d = e - s;
         new.push(s + ratio * d);
-        new.push(e - ratio * d);
+        if ratio != 0.5 {
+            new.push(e - ratio * d);
+        }
     }
 
     if !closed {
