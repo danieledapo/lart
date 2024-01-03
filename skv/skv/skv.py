@@ -80,10 +80,8 @@ class Skv(QMainWindow):
         command = self.command[:]
         for param, value in self.values.items():
             command.append("--" + param)
-            print(param, value, json.dumps(value))
             command.append(json.dumps(value))
 
-        print(command)
         self.process.start(command[0], command[1:])
         self.timer.start()
 
@@ -109,7 +107,6 @@ class Skv(QMainWindow):
             l = l.removeprefix(b"#SKV_VIEWER_COMMAND ")
             key, value = l.split(b"=", 1)
             if key == b"MANIFEST":
-                print(value)
                 manifest = json.loads(value)
             elif key == b"SVG":
                 output = value
