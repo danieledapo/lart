@@ -15,6 +15,9 @@ impl Simplify for Path {
     fn simplify(&self, eps: f64) -> Self {
         let mut out = Path::with_capacity(self.len());
         rdp(&mut out, self.points(), eps);
+        if self.is_closed() {
+            out.close();
+        }
         out
     }
 }
@@ -43,6 +46,13 @@ fn rdp(out: &mut Path, path: &[V], eps: f64) {
     let p0 = *path.first().unwrap();
     let p1 = *path.last().unwrap();
 
+    // if p0==p1 we cannot calculate the distance properly, just try the point
+    // before the last one
+    if p0 == p1 {
+        rdp(out, &path[..path.len() - 1], eps);
+        return;
+    }
+
     let mut maxd: f64 = -1.0;
     let mut i = path.len();
     for j in 1..path.len() - 1 {
@@ -53,7 +63,7 @@ fn rdp(out: &mut Path, path: &[V], eps: f64) {
         }
     }
 
-    if maxd < eps {
+    if maxd <= eps {
         out.push(p0);
         out.push(p1);
         return;
