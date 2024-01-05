@@ -61,7 +61,10 @@ macro_rules! skv_log {
 
 impl Sketch {
     pub fn new(name: &str) -> Self {
-        let seed = thread_rng().gen::<u64>();
+        let seed = std::time::SystemTime::now()
+            .duration_since(std::time::SystemTime::UNIX_EPOCH)
+            .unwrap()
+            .as_secs();
 
         Self {
             name: name.to_string(),
