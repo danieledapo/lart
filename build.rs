@@ -1,17 +1,13 @@
 use std::fs;
 
 fn main() {
-    let mut build = cxx_build::bridge("src/geo/types.rs");
-    build.flag_if_supported("-std=c++17");
-
-    build.flag("-IClipper2/CPP/Clipper2Lib/include");
-
-    build
+    cxx_build::bridge("src/geo/types.rs")
+        .flag("-std=c++17")
+        .flag("-IClipper2/CPP/Clipper2Lib/include")
         .file("src/geo/lart.cpp")
         .file("Clipper2/CPP/Clipper2Lib/src/clipper.engine.cpp")
-        .file("Clipper2/CPP/Clipper2Lib/src/clipper.offset.cpp");
-
-    build.compile("lart");
+        .file("Clipper2/CPP/Clipper2Lib/src/clipper.offset.cpp")
+        .compile("lart");
 
     println!("cargo:rerun-if-changed=src/geo/types.rs");
     println!("cargo:rerun-if-changed=include/lart.h");
