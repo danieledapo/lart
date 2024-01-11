@@ -71,7 +71,7 @@ macro_rules! sketch_parms {
                     )*
                 }
 
-                skv_log!("MANIFEST", Parms::default().manifest());
+                lart_viewer_command!("MANIFEST", Parms::default().manifest());
 
                 out
             }

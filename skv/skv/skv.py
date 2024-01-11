@@ -72,7 +72,7 @@ class Skv(QMainWindow):
 
         self.timer.stop()
         self.process = QProcess(self)
-        self.process.setEnvironment(QProcess.systemEnvironment() + ["SKV_VIEWER=1"])
+        self.process.setEnvironment(QProcess.systemEnvironment() + ["LART_VIEWER=1"])
 
         self.process.errorOccurred.connect(self.onCommandError)
         self.process.finished.connect(self.onCommandFinished)
@@ -100,11 +100,11 @@ class Skv(QMainWindow):
 
         data = bytearray(self.process.readAllStandardOutput())
         for l in data.splitlines():
-            if not l.startswith(b"#SKV_VIEWER_COMMAND "):
+            if not l.startswith(b"#LART_VIEWER_COMMAND "):
                 print(bytearray(l).decode("utf-8"))
                 continue
 
-            l = l.removeprefix(b"#SKV_VIEWER_COMMAND ")
+            l = l.removeprefix(b"#LART_VIEWER_COMMAND ")
             key, value = l.split(b"=", 1)
             if key == b"MANIFEST":
                 manifest = json.loads(value)

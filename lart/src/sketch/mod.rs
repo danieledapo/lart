@@ -51,10 +51,10 @@ pub struct Layer {
 pub struct Page(pub f64, pub f64);
 
 #[macro_export]
-macro_rules! skv_log {
+macro_rules! lart_viewer_command {
     ($command:expr, $value:expr) => {
-        if std::env::var("SKV_VIEWER").is_ok() {
-            println!("#SKV_VIEWER_COMMAND {}={}", $command, $value);
+        if std::env::var("LART_VIEWER").is_ok() {
+            println!("#LART_VIEWER_COMMAND {}={}", $command, $value);
         }
     };
 }
@@ -269,7 +269,7 @@ impl Sketch {
             p.execute(outpath);
         }
 
-        skv_log!("SVG", outpath);
+        lart_viewer_command!("SVG", outpath);
 
         Ok(())
     }
