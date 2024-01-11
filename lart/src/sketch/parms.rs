@@ -13,8 +13,6 @@ pub enum Schema {
     Int(i128, RangeInclusive<i128>),
     Double(f64, RangeInclusive<f64>),
     Bool(bool),
-    Usize(usize),
-    Isize(isize),
     Choice(Choice),
 }
 
@@ -164,22 +162,6 @@ impl Schema {
             Schema::Bool(b) => {
                 write!(out, r#"{{"type": "bool", "default": {b}}}"#)
             }
-            Schema::Isize(i) => {
-                write!(
-                    out,
-                    r#"{{"type": "int", "default": {i}, "min": {}, "max": {}}}"#,
-                    isize::MIN,
-                    isize::MAX
-                )
-            }
-            Schema::Usize(i) => {
-                write!(
-                    out,
-                    r#"{{"type": "int", "default": {i}, "min": {}, "max": {}}}"#,
-                    usize::MIN,
-                    usize::MAX
-                )
-            }
             Schema::Choice(c) => {
                 write!(
                     out,
@@ -322,22 +304,13 @@ impl_num_arg!(i64, i128, Int);
 impl_num_arg!(f32, f64, Double);
 impl_num_arg!(f64, f64, Double);
 
+#[cfg(target_pointer_width = "64")]
 impl CliArg for usize {
     fn parse_args(&mut self, args: &mut CliTokens) {
         *self = args.parsed_next();
     }
 
     fn schema(&self) -> Schema {
-        Schema::Usize(*self)
-    }
-}
-
-impl CliArg for isize {
-    fn parse_args(&mut self, args: &mut CliTokens) {
-        *self = args.parsed_next();
-    }
-
-    fn schema(&self) -> Schema {
-        Schema::Isize(*self)
+        Schema::Int(u64::try_from(*self).unwrap().into(), 0..=u64::MAX.into())
     }
 }
