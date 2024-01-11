@@ -1,20 +1,6 @@
-[package]
-name = "lart"
-version = "0.1.0"
-edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
-[dependencies]
-cxx = "1.0"
-rand_xoshiro = "0.6"
-voronoice = "0.2"
-delaunator = "1.0"
-
-[dependencies.rand]
-version = "0.8"
-default-features = false
-features = ["alloc"]
-
-[build-dependencies]
-cxx-build = "1.0"
+[workspace]
+members = [
+    "lart",
+    "lart-sketches",
+]
+resolver = "2"

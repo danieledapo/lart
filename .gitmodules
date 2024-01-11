@@ -1,3 +1,3 @@
-[submodule "Clipper2"]
-	path = Clipper2
+[submodule "lart/Clipper2"]
+	path = lart/Clipper2
 	url = https://github.com/AngusJohnson/Clipper2
