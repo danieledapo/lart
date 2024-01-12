@@ -1,11 +1,14 @@
-use std::{env::Args, fmt, iter::Skip, mem, ops::RangeInclusive, str::FromStr};
+use std::{env::Args, io, iter::Skip, mem, ops::RangeInclusive, str::FromStr};
 
-use crate::Page;
+use crate::{
+    rpc::{usize_to_u64, Rpc},
+    Page,
+};
 
-pub trait CliArg {
+pub trait Parm {
     // An error is a panic when parsing
     fn parse_args(&mut self, args: &mut CliTokens);
-    fn schema(&self) -> Schema;
+    fn send_schema(&self, rpc: &mut Rpc) -> io::Result<()>;
 }
 
 pub enum Schema {
@@ -51,50 +54,30 @@ macro_rules! sketch_parms {
             pub fn from_cli() -> Self {
                 let mut args = CliTokens::from_env();
 
-                let mut out = Parms::default();
+                let mut parms = Parms::default();
+
+                $(
+                    $crate::rpc::cmd("PARM", |rpc| {
+                        rpc.kv("name", stringify!($name).as_bytes())?;
+                        parms.$name.send_schema(rpc)
+                    }).unwrap();
+                )*
 
                 while let Some(option) = args.next() {
-                    let option_name = match option.strip_prefix("--") {
-                        None => {
-                            // only long options are supported or unparsed value
-                            continue;
-                        }
-                        Some(o) => o,
+                    let Some(option_name) = option.strip_prefix("--") else {
+                        // given that only long options are supported it's
+                        // either that or an unparsed value
+                        continue;
                     };
 
                     $(
                         if option_name == stringify!($name) {
-                            out.$name.parse_args(&mut args);
+                            parms.$name.parse_args(&mut args);
                         }
                     )*
                 }
 
-                lart_viewer_command!("MANIFEST", Parms::default().manifest());
-
-                out
-            }
-
-            pub fn manifest(&self) -> String {
-                use std::fmt::Write;
-
-                let mut s = "{".to_string();
-
-                let mut pop_coma = false;
-
-                $(
-                    write!(s, r#""{}":"#, stringify!($name)).unwrap();
-                    self.$name.schema().dump(&mut s).unwrap();
-                    s.push(',');
-                    pop_coma = true;
-                )*
-
-                // thank you json
-                if pop_coma {
-                    s.pop();
-                }
-
-                s.push('}');
-                s
+                parms
             }
         }
     };
@@ -137,52 +120,7 @@ impl Iterator for CliTokens {
     }
 }
 
-impl Schema {
-    pub fn dump<W: fmt::Write>(&self, out: &mut W) -> Result<(), fmt::Error> {
-        match self {
-            Schema::String(ss) => {
-                write!(out, r#"{{"type": "string", "default": "{ss}"}}"#)
-            }
-            Schema::Int(i, range) => {
-                write!(
-                    out,
-                    r#"{{"type": "int", "default": {i}, "min": {}, "max": {}}}"#,
-                    range.start(),
-                    range.end()
-                )
-            }
-            Schema::Double(d, range) => {
-                write!(
-                    out,
-                    r#"{{"type": "double", "default": {d}, "min": {}, "max": {}}}"#,
-                    range.start(),
-                    range.end()
-                )
-            }
-            Schema::Bool(b) => {
-                write!(out, r#"{{"type": "bool", "default": {b}}}"#)
-            }
-            Schema::Choice(c) => {
-                write!(
-                    out,
-                    r#"{{"type": "choice", "default": "{def}", "choices": ["#,
-                    def = c.val
-                )?;
-
-                for (i, choice) in c.choices.iter().enumerate() {
-                    write!(out, r#""{}""#, choice)?;
-                    if i < c.choices.len() - 1 {
-                        write!(out, ",")?;
-                    }
-                }
-
-                write!(out, "]}}")
-            }
-        }
-    }
-}
-
-impl CliArg for bool {
+impl Parm for bool {
     fn parse_args(&mut self, args: &mut CliTokens) {
         let n = args.next().unwrap().to_lowercase();
         if n == "true" || n == "1" {
@@ -194,12 +132,13 @@ impl CliArg for bool {
         }
     }
 
-    fn schema(&self) -> Schema {
-        Schema::Bool(*self)
+    fn send_schema(&self, rpc: &mut Rpc) -> io::Result<()> {
+        rpc.kv("type", "bool".as_bytes())?;
+        rpc.kv("default", &[*self as u8])
     }
 }
 
-impl CliArg for String {
+impl Parm for String {
     fn parse_args(&mut self, args: &mut CliTokens) {
         let p = args.parsed_next::<String>();
 
@@ -216,8 +155,9 @@ impl CliArg for String {
         *self = p.to_string();
     }
 
-    fn schema(&self) -> Schema {
-        Schema::String(self.clone())
+    fn send_schema(&self, rpc: &mut Rpc) -> io::Result<()> {
+        rpc.kv("type", "string".as_bytes())?;
+        rpc.kv("default", self.as_bytes())
     }
 }
 
@@ -234,7 +174,7 @@ impl Choice {
     }
 }
 
-impl CliArg for Choice {
+impl Parm for Choice {
     fn parse_args(&mut self, args: &mut CliTokens) {
         self.val.parse_args(args);
         if !self.choices.contains(&self.val.as_str()) {
@@ -242,12 +182,18 @@ impl CliArg for Choice {
         }
     }
 
-    fn schema(&self) -> Schema {
-        Schema::Choice(self.clone())
+    fn send_schema(&self, rpc: &mut Rpc) -> io::Result<()> {
+        rpc.kv("type", "choice".as_bytes())?;
+        rpc.kv("default", self.val.as_bytes())?;
+        rpc.kv("len", &usize_to_u64(self.choices.len()).to_le_bytes())?;
+        for (choice, i) in self.choices.iter().zip(0_u64..) {
+            rpc.kv(&i.to_le_bytes(), choice.as_bytes())?;
+        }
+        Ok(())
     }
 }
 
-impl CliArg for Page {
+impl Parm for Page {
     fn parse_args(&mut self, args: &mut CliTokens) {
         let mut p = String::new();
         p.parse_args(args);
@@ -267,50 +213,41 @@ impl CliArg for Page {
         .1;
     }
 
-    fn schema(&self) -> Schema {
-        Schema::Choice(Choice::new(
-            "A4",
-            &["A6", "A5", "A4", "A3", "A2", "A1", "A0"],
-        ))
+    fn send_schema(&self, rpc: &mut Rpc) -> io::Result<()> {
+        Choice::new("A4", &["A6", "A5", "A4", "A3", "A2", "A1", "A0"]).send_schema(rpc)
     }
 }
 
 macro_rules! impl_num_arg {
-    ($t: ty, $tt: ty, $variant: ident) => {
-        impl CliArg for $t {
+    ($t: ty, $lart_t: ident) => {
+        impl Parm for $t {
             fn parse_args(&mut self, args: &mut CliTokens) {
                 *self = args.parsed_next();
             }
 
-            fn schema(&self) -> Schema {
-                Schema::$variant(
-                    <$tt>::from(*self),
-                    <$tt>::from(<$t>::MIN)..=<$tt>::from(<$t>::MAX),
-                )
+            fn send_schema(&self, rpc: &mut Rpc) -> io::Result<()> {
+                rpc.kv("type", stringify!($lart_t).as_bytes())?;
+                rpc.kv("min", &<$t>::MIN.to_le_bytes())?;
+                rpc.kv("max", &<$t>::MAX.to_le_bytes())?;
+                rpc.kv("default", &self.to_le_bytes())
             }
         }
     };
 }
 
-impl_num_arg!(u8, i128, Int);
-impl_num_arg!(u16, i128, Int);
-impl_num_arg!(u32, i128, Int);
-impl_num_arg!(u64, i128, Int);
-impl_num_arg!(i8, i128, Int);
-impl_num_arg!(i16, i128, Int);
-impl_num_arg!(i32, i128, Int);
-impl_num_arg!(i64, i128, Int);
+impl_num_arg!(u8, uint);
+impl_num_arg!(u16, uint);
+impl_num_arg!(u32, uint);
+impl_num_arg!(u64, uint);
+impl_num_arg!(u128, uint);
+impl_num_arg!(usize, uint);
 
-impl_num_arg!(f32, f64, Double);
-impl_num_arg!(f64, f64, Double);
+impl_num_arg!(i8, int);
+impl_num_arg!(i16, int);
+impl_num_arg!(i32, int);
+impl_num_arg!(i64, int);
+impl_num_arg!(i128, int);
+impl_num_arg!(isize, int);
 
-#[cfg(target_pointer_width = "64")]
-impl CliArg for usize {
-    fn parse_args(&mut self, args: &mut CliTokens) {
-        *self = args.parsed_next();
-    }
-
-    fn schema(&self) -> Schema {
-        Schema::Int(u64::try_from(*self).unwrap().into(), 0..=u64::MAX.into())
-    }
-}
+impl_num_arg!(f32, double);
+impl_num_arg!(f64, double);

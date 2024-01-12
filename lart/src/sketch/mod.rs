@@ -1,5 +1,6 @@
 pub mod hatching;
 pub mod parms;
+pub mod rpc;
 pub mod vpype;
 
 pub use hatching::*;
@@ -49,15 +50,6 @@ pub struct Layer {
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Page(pub f64, pub f64);
-
-#[macro_export]
-macro_rules! lart_viewer_command {
-    ($command:expr, $value:expr) => {
-        if std::env::var("LART_VIEWER").is_ok() {
-            println!("#LART_VIEWER_COMMAND {}={}", $command, $value);
-        }
-    };
-}
 
 impl Sketch {
     pub fn new(name: &str) -> Self {
@@ -269,7 +261,7 @@ impl Sketch {
             p.execute(outpath);
         }
 
-        lart_viewer_command!("SVG", outpath);
+        rpc::cmd("SVG", |rpc| rpc.kv("path", outpath.as_bytes())).unwrap();
 
         Ok(())
     }

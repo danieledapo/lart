@@ -2,5 +2,6 @@
 members = [
     "lart",
     "lart-sketches",
+    "lart-viewer",
 ]
 resolver = "2"
