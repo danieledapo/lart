@@ -2,7 +2,7 @@ use std::{collections::HashMap, process::Command, time::Duration};
 
 use vsvg::Document;
 
-use anyhow::{bail, ensure};
+use anyhow::bail;
 
 use crate::schema::{Manifest, Parm};
 
@@ -57,44 +57,10 @@ impl SketchOutput {
     }
 
     fn from_output(output: &[u8]) -> anyhow::Result<Self> {
-        const CMD_START_TAG: u8 = 0xFF;
-        const CMD_END_TAG: u8 = 0x00;
-        const DATA_TAG: u8 = 0x0F;
-
-        let read_data = |position: &mut usize, tag: u8| -> anyhow::Result<&[u8]> {
-            ensure!(*position < output.len(), "truncated data");
-            ensure!(output[*position] == tag, "tag mismatch, expected {tag}");
-            *position += 1;
-
-            ensure!(*position + 7 < output.len(), "truncated data");
-            let sz = u64::from_le_bytes(output[*position..*position + 8].try_into()?);
-            let sz = usize::try_from(sz)?;
-            *position += 8;
-
-            ensure!(*position + sz < output.len(), "truncated data");
-            let d = &output[*position..*position + sz];
-            *position += sz;
-
-            Ok(d)
-        };
-
         let mut res = Self::empty();
-        let mut position = 0;
 
-        while position < output.len() {
-            let cmd = read_data(&mut position, CMD_START_TAG)?;
-
-            let mut kv = HashMap::new();
-            loop {
-                if output[position] == CMD_END_TAG {
-                    position += 9;
-                    break;
-                }
-                let prop = read_data(&mut position, DATA_TAG)?;
-                let data = read_data(&mut position, DATA_TAG)?;
-                kv.insert(prop, data);
-            }
-
+        for cmd in crate::rpc::parse_cmds(output) {
+            let (cmd, kv) = cmd?;
             match cmd {
                 b"SVG" => res.parse_svg(&kv)?,
                 b"PARM" => res.parse_parm(&kv)?,
@@ -106,7 +72,7 @@ impl SketchOutput {
     }
 
     fn parse_svg(&mut self, kv: &HashMap<&[u8], &[u8]>) -> anyhow::Result<()> {
-        self.svg_filepath = Some(get_str(kv, b"path")?);
+        self.svg_filepath = Some(crate::rpc::get_str(kv, b"path")?);
 
         self.svg = self
             .svg_filepath
@@ -117,6 +83,8 @@ impl SketchOutput {
     }
 
     fn parse_parm(&mut self, kv: &HashMap<&[u8], &[u8]>) -> anyhow::Result<()> {
+        use crate::rpc::{get_double, get_int, get_str, get_uint};
+
         let parm = get_str(kv, b"name")?;
         let ty = get_str(kv, b"type")?;
 
@@ -161,62 +129,4 @@ impl SketchOutput {
 
         Ok(())
     }
-}
-
-fn get_str(kv: &HashMap<&[u8], &[u8]>, k: &[u8]) -> anyhow::Result<String> {
-    let Some(s) = kv.get(k) else {
-        bail!("str {} not found", String::from_utf8_lossy(k))
-    };
-
-    let s = String::from_utf8(s.to_vec())?;
-    Ok(s)
-}
-
-fn get_int(kv: &HashMap<&[u8], &[u8]>, k: &[u8]) -> anyhow::Result<i64> {
-    let Some(d) = kv.get(k) else {
-        bail!("int {} not found", String::from_utf8_lossy(k))
-    };
-
-    ensure!(d.len() <= 8, "is not a valid int");
-
-    let n = d
-        .iter()
-        .rev()
-        .fold(0, |acc, byte| (acc << 8_u32) | u64::from(*byte));
-
-    // sign extension
-    let shift = (8 - d.len()) * 8;
-    let n = (n << shift) as i64 >> shift;
-
-    Ok(n)
-}
-
-fn get_uint(kv: &HashMap<&[u8], &[u8]>, k: &[u8]) -> anyhow::Result<u64> {
-    let Some(d) = kv.get(k) else {
-        bail!("uint {} not found", String::from_utf8_lossy(k))
-    };
-
-    ensure!(d.len() <= 8, "is not a valid uint");
-
-    let n = d
-        .iter()
-        .rev()
-        .fold(0, |acc, byte| (acc << 8_u32) | u64::from(*byte));
-
-    Ok(n)
-}
-
-fn get_double(kv: &HashMap<&[u8], &[u8]>, k: &[u8]) -> anyhow::Result<f64> {
-    let Some(d) = kv.get(k) else {
-        bail!("double {} not found", String::from_utf8_lossy(k))
-    };
-
-    ensure!(d.len() <= 8, "is not a valid double");
-
-    let d = f64::from_bits(
-        d.iter()
-            .rev()
-            .fold(0, |acc, byte| (acc << 8) | u64::from(*byte)),
-    );
-    Ok(d)
 }

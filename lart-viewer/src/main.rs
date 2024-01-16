@@ -11,6 +11,7 @@ use std::{
     time::Duration,
 };
 
+mod rpc;
 mod schema;
 mod sketch;
 
