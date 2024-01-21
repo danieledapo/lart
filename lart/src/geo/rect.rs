@@ -73,6 +73,19 @@ impl Rect {
         self.max.y = f64::max(self.max.y, bbox.max.y);
     }
 
+    pub fn intersection(&self, bbox: &Rect) -> Option<Rect> {
+        let l = f64::max(self.min.x, bbox.min.x);
+        let r = f64::min(self.max.x, bbox.max.x);
+
+        let t = f64::max(self.min.y, bbox.min.y);
+        let b = f64::min(self.max.y, bbox.max.y);
+
+        (l <= r && t <= b).then(|| Rect {
+            min: v(l, t),
+            max: v(r, b),
+        })
+    }
+
     pub fn dist(&self, v: V) -> f64 {
         self.dist2(v).sqrt()
     }
