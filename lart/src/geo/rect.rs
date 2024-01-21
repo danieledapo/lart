@@ -1,3 +1,5 @@
+use std::ops::RangeInclusive;
+
 use crate::{polygon, v, Path, V};
 
 pub trait Bbox {
@@ -124,6 +126,14 @@ impl Rect {
     }
     pub fn max(&self) -> V {
         self.max
+    }
+
+    pub fn range_x(&self) -> RangeInclusive<f64> {
+        self.left()..=self.right()
+    }
+
+    pub fn range_y(&self) -> RangeInclusive<f64> {
+        self.top()..=self.bottom()
     }
 
     pub fn contains(&self, v: V) -> bool {
