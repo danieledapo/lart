@@ -307,6 +307,16 @@ impl Page {
     pub const A4: Self = Self(210.0, 297.0);
     pub const A5: Self = Self(148.0, 210.0);
     pub const A6: Self = Self(105.0, 148.0);
+
+    pub const STD_SIZES: [(&'static str, Self); 7] = [
+        ("A0", Page::A0),
+        ("A1", Page::A1),
+        ("A2", Page::A2),
+        ("A3", Page::A3),
+        ("A4", Page::A4),
+        ("A5", Page::A5),
+        ("A6", Page::A6),
+    ];
 }
 
 impl RngCore for Sketch {

@@ -198,23 +198,24 @@ impl Parm for Page {
         let mut p = String::new();
         p.parse_args(args);
 
-        *self = [
-            ("A0", Page::A0),
-            ("A1", Page::A1),
-            ("A2", Page::A2),
-            ("A3", Page::A3),
-            ("A4", Page::A4),
-            ("A5", Page::A5),
-            ("A6", Page::A6),
-        ]
-        .into_iter()
-        .find(|(s, _)| s == &p)
-        .expect("invalid page")
-        .1;
+        *self = Self::STD_SIZES
+            .iter()
+            .find(|(s, _)| s == &p)
+            .expect("invalid page")
+            .1
+            .clone();
     }
 
     fn send_schema(&self, rpc: &mut Rpc) -> io::Result<()> {
-        Choice::new("A4", &["A6", "A5", "A4", "A3", "A2", "A1", "A0"]).send_schema(rpc)
+        Choice::new(
+            Self::STD_SIZES
+                .iter()
+                .find(|(_, d)| d == self)
+                .expect("invalid page")
+                .0,
+            &["A6", "A5", "A4", "A3", "A2", "A1", "A0"],
+        )
+        .send_schema(rpc)
     }
 }
 
