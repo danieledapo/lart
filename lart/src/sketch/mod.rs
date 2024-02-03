@@ -317,6 +317,10 @@ impl Page {
         ("A5", Page::A5),
         ("A6", Page::A6),
     ];
+
+    pub fn flip_orientation(self) -> Self {
+        Self(self.1, self.0)
+    }
 }
 
 impl RngCore for Sketch {
