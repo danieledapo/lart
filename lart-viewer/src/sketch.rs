@@ -39,8 +39,8 @@ pub fn sketch_run(sketch_input: &SketchInput) -> anyhow::Result<SketchOutput> {
         }))
         .output()?;
 
+    eprintln!("{}", String::from_utf8_lossy(&output.stderr));
     if !output.status.success() {
-        eprintln!("{}", String::from_utf8_lossy(&output.stderr));
         bail!("<generation failed>");
     }
 
