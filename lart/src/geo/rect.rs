@@ -1,4 +1,4 @@
-use std::ops::RangeInclusive;
+use std::ops::{Add, AddAssign, RangeInclusive};
 
 use crate::{polygon, v, Path, V};
 
@@ -203,5 +203,21 @@ impl Bbox for Rect {
 impl<B: Bbox> Bbox for &B {
     fn bbox(&self) -> Option<Rect> {
         (*self).bbox()
+    }
+}
+
+impl Add<V> for Rect {
+    type Output = Self;
+
+    fn add(mut self, rhs: V) -> Self::Output {
+        self += rhs;
+        self
+    }
+}
+
+impl AddAssign<V> for Rect {
+    fn add_assign(&mut self, rhs: V) {
+        self.min += rhs;
+        self.max += rhs;
     }
 }
